@@ -16,12 +16,12 @@ import {
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/clients", label: "Clients", icon: Users },
-  { href: "/quotes", label: "Quotes", icon: FileText },
-  { href: "/contracts", label: "Contracts", icon: FileSignature },
-  { href: "/invoices", label: "Invoices", icon: Receipt },
-  { href: "/pricing", label: "Pricing", icon: CreditCard },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard/clients", label: "Clients", icon: Users },
+  { href: "/dashboard/quotes", label: "Quotes", icon: FileText },
+  { href: "/dashboard/contracts", label: "Contracts", icon: FileSignature },
+  { href: "/dashboard/invoices", label: "Invoices", icon: Receipt },
+  { href: "/dashboard/pricing", label: "Pricing", icon: CreditCard },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 export function Sidebar() {
