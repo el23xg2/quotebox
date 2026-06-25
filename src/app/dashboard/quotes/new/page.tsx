@@ -108,10 +108,10 @@ function NewQuoteForm() {
         client_id: clientId,
         quote_number: quoteNumber,
         status: "draft",
-        subtotal: Math.round(subtotal * 100),
+        subtotal: subtotal,
         tax_rate: taxRate,
-        discount: Math.round(discountAmount * 100),
-        total: Math.round(total * 100),
+        discount: discountAmount,
+        total: total,
       })
       .select()
       .single();
@@ -128,8 +128,8 @@ function NewQuoteForm() {
         quote_id: quote.id,
         description: item.description,
         quantity: item.quantity,
-        unit_price: Math.round(item.unit_price * 100),
-        amount: Math.round(item.quantity * item.unit_price * 100),
+        unit_price: item.unit_price,
+        amount: Math.round(item.quantity * item.unit_price),
       }))
     );
 
