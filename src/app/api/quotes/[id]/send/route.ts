@@ -23,7 +23,7 @@ export async function POST(
   // Get quote with client info
   const { data: quote, error: dbError } = await supabase
     .from("quotes")
-    .select("*, clients(name, email), users(email)")
+    .select("*, clients(name, email)")
     .eq("id", id)
     .single();
 
