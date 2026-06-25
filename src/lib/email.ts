@@ -32,13 +32,19 @@ export async function sendEmail(payload: EmailPayload) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "QuoteBox <notifications@quotebox.app>",
+          from: "QuoteBox <onboarding@resend.dev>",
           to: [payload.to],
+          reply_to: ["notifications@quotebox.app"],
           subject: payload.subject,
           html: payload.html,
         }),
       });
-      return await res.json();
+      const result = await res.json();
+      if (!res.ok) {
+        console.error("Resend API error:", result);
+        return { success: false, error: result };
+      }
+      return result;
     } catch (err) {
       console.error("Failed to send email via Resend:", err);
       return { success: false };
