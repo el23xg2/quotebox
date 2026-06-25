@@ -131,7 +131,7 @@ export default function PublicInvoicePage() {
               <h2 className="text-xl font-bold text-gray-900">Payment Received</h2>
               <p className="text-gray-500 mt-2">Thank you! This invoice has been paid.</p>
             </div>
-          ) : (
+          ) : invoice.status === "sent" ? (
             <button
               onClick={handlePay}
               disabled={paying}
@@ -139,7 +139,7 @@ export default function PublicInvoicePage() {
             >
               {paying ? "Redirecting to payment..." : `Pay $${(invoice.total / 100).toFixed(2)}`}
             </button>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

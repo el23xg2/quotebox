@@ -1,22 +1,22 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 async function getQuote(id: string) {
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get: async (name: string) => {
-          const cookieStore = await cookies();
-          return cookieStore.get(name)?.value;
-        },
-        set: async () => {},
-        remove: async () => {},
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  if (!supabaseUrl.startsWith("http")) return null;
+
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      get: async (name: string) => {
+        const cookieStore = await cookies();
+        return cookieStore.get(name)?.value;
       },
-    }
-  );
+      set: async () => {},
+      remove: async () => {},
+    },
+  });
 
   const { data } = await supabase
     .from("quotes")
@@ -131,7 +131,7 @@ export default async function PublicQuotePage({
         </div>
 
         <div className="mt-6 text-center">
-          {quote.status === "draft" || quote.status === "sent" ? (
+          {quote.status === "sent" ? (
             <form
               action={`/api/quotes/${quote.id}/accept`}
               method="POST"

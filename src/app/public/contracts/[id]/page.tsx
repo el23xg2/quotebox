@@ -105,7 +105,7 @@ export default function PublicContractPage() {
                 Thank you. A copy of the signed contract has been sent to both parties.
               </p>
             </div>
-          ) : (
+          ) : contract.status === "sent" ? (
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Sign this contract</h2>
 
@@ -187,7 +187,7 @@ export default function PublicContractPage() {
                 {signing ? "Signing..." : "Sign Contract"}
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
