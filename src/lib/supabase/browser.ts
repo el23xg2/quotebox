@@ -3,8 +3,11 @@
 import { createBrowserClient } from "@supabase/ssr";
 
 export function createSupabaseBrowserClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  let url = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").trim();
+  const key = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "").trim();
+
+  // Sanitize: remove trailing slash if present (common copy-paste mistake)
+  if (url.endsWith("/")) url = url.slice(0, -1);
 
   // If Supabase isn't configured, return a mock client that returns empty data
   if (!url.startsWith("http")) {

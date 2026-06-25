@@ -20,6 +20,11 @@ export default function LoginPage() {
     setError("");
 
     const supabase = createSupabaseBrowserClient();
+
+    // Log config for debugging
+    console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log("Redirect to:", `${window.location.origin}/auth/callback`);
+
     const { error: signInError } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -28,7 +33,8 @@ export default function LoginPage() {
     });
 
     if (signInError) {
-      setError(signInError.message);
+      console.error("Sign in error details:", signInError);
+      setError(`登录失败: ${signInError.message}`);
       setLoading(false);
       return;
     }
