@@ -45,7 +45,8 @@ export default function NewClientPage() {
       .single();
 
     if (insertError) {
-      setError(insertError.message);
+      console.error("Insert error:", insertError);
+      setError(`创建失败: ${insertError.message}`);
       setLoading(false);
       return;
     }
