@@ -29,6 +29,7 @@ export default function LoginPage() {
       email,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // Also try the explicit production URL as a fallback
       },
     });
 
