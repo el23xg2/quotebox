@@ -163,7 +163,7 @@ export default function InvoiceDetailPage() {
         </CardContent>
       </Card>
 
-      {invoice.status === "draft" && (
+      {invoice.status !== "draft" && (
         <div className="mt-6">
           <p className="text-sm text-gray-500">
             Client payment link:{" "}

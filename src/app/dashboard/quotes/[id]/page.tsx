@@ -114,8 +114,9 @@ export default function QuoteDetailPage() {
         </div>
       </div>
 
-      {/* Public link */}
-      <Card className="mb-6">
+      {/* Public link - only show after sending */}
+      {quote.status !== "draft" && (
+        <Card className="mb-6">
         <CardContent className="py-3">
           <p className="text-sm text-gray-500">
             Client view link:{" "}
@@ -129,6 +130,7 @@ export default function QuoteDetailPage() {
           </p>
         </CardContent>
       </Card>
+      )}
 
       {/* Quote preview */}
       <Card>

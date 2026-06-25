@@ -149,7 +149,7 @@ export default function ContractDetailPage() {
         </CardContent>
       </Card>
 
-      {contract.status === "draft" && (
+      {contract.status !== "draft" && (
         <div className="mt-6">
           <p className="text-sm text-gray-500 mb-2">
             Client signature link:{" "}
