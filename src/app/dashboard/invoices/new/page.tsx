@@ -142,8 +142,8 @@ function NewInvoiceForm() {
         invoice_id: invoice.id,
         description: item.description,
         quantity: item.quantity,
-        unit_price: Math.round(item.unit_price * 100),
-        amount: Math.round(item.quantity * item.unit_price * 100),
+        unit_price: item.unit_price,
+        amount: Math.round(item.quantity * item.unit_price),
       }))
     );
 
