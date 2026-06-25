@@ -51,9 +51,22 @@ export default function ContractDetailPage() {
     if (!contract) return;
     setSending(true);
 
-    await fetch(`/api/contracts/${contract.id}/send`, { method: "POST" });
+    try {
+      const res = await fetch(`/api/contracts/${contract.id}/send`, { method: "POST" });
+      const data = await res.json();
 
-    setContract({ ...contract, status: "sent" });
+      if (!res.ok) {
+        alert(`发送失败: ${data.error || "未知错误"}`);
+        setSending(false);
+        return;
+      }
+
+      alert("合同已成功发送给客户签名！");
+      setContract({ ...contract, status: "sent" });
+    } catch (err) {
+      alert("发送失败: 网络错误");
+      console.error(err);
+    }
     setSending(false);
   }
 

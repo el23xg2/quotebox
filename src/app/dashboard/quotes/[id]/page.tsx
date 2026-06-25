@@ -54,9 +54,22 @@ export default function QuoteDetailPage() {
     if (!quote) return;
     setSending(true);
 
-    await fetch(`/api/quotes/${quote.id}/send`, { method: "POST" });
+    try {
+      const res = await fetch(`/api/quotes/${quote.id}/send`, { method: "POST" });
+      const data = await res.json();
 
-    setQuote({ ...quote, status: "sent", sent_at: new Date().toISOString() });
+      if (!res.ok) {
+        alert(`发送失败: ${data.error || "未知错误"}`);
+        setSending(false);
+        return;
+      }
+
+      alert("报价已成功发送给客户！");
+      setQuote({ ...quote, status: "sent", sent_at: new Date().toISOString() });
+    } catch (err) {
+      alert("发送失败: 网络错误");
+      console.error(err);
+    }
     setSending(false);
   }
 

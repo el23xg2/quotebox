@@ -51,9 +51,22 @@ export default function InvoiceDetailPage() {
     if (!invoice) return;
     setSending(true);
 
-    await fetch(`/api/invoices/${invoice.id}/send`, { method: "POST" });
+    try {
+      const res = await fetch(`/api/invoices/${invoice.id}/send`, { method: "POST" });
+      const data = await res.json();
 
-    setInvoice({ ...invoice, status: "sent" });
+      if (!res.ok) {
+        alert(`发送失败: ${data.error || "未知错误"}`);
+        setSending(false);
+        return;
+      }
+
+      alert("发票已成功发送给客户！");
+      setInvoice({ ...invoice, status: "sent" });
+    } catch (err) {
+      alert("发送失败: 网络错误");
+      console.error(err);
+    }
     setSending(false);
   }
 
