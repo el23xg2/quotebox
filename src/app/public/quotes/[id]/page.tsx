@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { formatCurrency } from "@/lib/utils";
 
 async function getQuote(id: string) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -56,8 +57,8 @@ export default async function PublicQuotePage({
           <p className="text-gray-500">#{quote.quote_number}</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10">
-          <div className="flex justify-between items-start mb-10">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-10">
+          <div className="flex flex-col sm:flex-row justify-between items-start mb-6 sm:mb-10 gap-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
                 {quote.clients?.name || "Client"}
@@ -67,7 +68,7 @@ export default async function PublicQuotePage({
                 <p className="text-sm text-gray-500">{quote.clients.company}</p>
               )}
             </div>
-            <div className="text-right">
+            <div className="sm:text-right">
               <p className="text-sm text-gray-500">Date</p>
               <p className="font-medium">
                 {new Date(quote.created_at).toLocaleDateString("en-US", {
@@ -79,7 +80,8 @@ export default async function PublicQuotePage({
             </div>
           </div>
 
-          <table className="w-full mb-10">
+          <div className="overflow-x-auto -mx-6 sm:-mx-10">
+            <table className="w-full mb-10 min-w-[500px] px-6 sm:px-10">
             <thead>
               <tr className="border-b-2 border-gray-200">
                 <th className="text-left py-3 text-sm font-semibold text-gray-700">Description</th>
@@ -94,37 +96,38 @@ export default async function PublicQuotePage({
                   <td className="py-4 text-sm text-gray-900">{item.description}</td>
                   <td className="py-4 text-sm text-right text-gray-700">{item.quantity}</td>
                   <td className="py-4 text-sm text-right text-gray-700">
-                    ${(item.unit_price / 100).toFixed(2)}
+                    {formatCurrency(item.unit_price)}
                   </td>
                   <td className="py-4 text-sm text-right font-medium">
-                    ${(item.amount / 100).toFixed(2)}
+                    {formatCurrency(item.amount)}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
 
           <div className="flex justify-end">
             <div className="w-72 space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Subtotal</span>
-                <span>${(subtotal / 100).toFixed(2)}</span>
+                <span>{formatCurrency(subtotal)}</span>
               </div>
               {quote.tax_rate > 0 && (
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Tax ({quote.tax_rate}%)</span>
-                  <span>${(taxAmount / 100).toFixed(2)}</span>
+                  <span>{formatCurrency(taxAmount)}</span>
                 </div>
               )}
               {discountAmount > 0 && (
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Discount</span>
-                  <span>-${(discountAmount / 100).toFixed(2)}</span>
+                  <span>-{formatCurrency(discountAmount)}</span>
                 </div>
               )}
               <div className="flex justify-between font-bold text-lg text-gray-900 pt-2 border-t-2 border-gray-200">
                 <span>Total</span>
-                <span>${(total / 100).toFixed(2)}</span>
+                <span>{formatCurrency(total)}</span>
               </div>
             </div>
           </div>

@@ -71,28 +71,28 @@ export default function PublicContractPage() {
   if (!contract) return <div className="min-h-screen flex items-center justify-center"><p className="text-red-500">Contract not found.</p></div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-6">
+    <div className="min-h-screen bg-gray-50 py-8 sm:py-12 px-4 sm:px-6">
       <div className="mx-auto max-w-3xl">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
               <span className="text-sm font-bold text-white">Q</span>
             </div>
             <span className="text-lg font-semibold text-gray-900">QuoteBox</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{contract.title}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{contract.title}</h1>
           {contract.clients && (
             <p className="text-gray-500">for {contract.clients.name}</p>
           )}
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10 mb-6">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-10 mb-6">
           <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700 leading-relaxed">
             {contract.content}
           </pre>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
           {signed ? (
             <div className="text-center py-8">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 mb-4">
@@ -109,10 +109,10 @@ export default function PublicContractPage() {
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Sign this contract</h2>
 
-              <div className="flex gap-4 mb-6">
+              <div className="flex gap-3 mb-6">
                 <button
                   onClick={() => setSignatureType("typed")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium ${
                     signatureType === "typed"
                       ? "bg-blue-600 text-white"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -122,7 +122,7 @@ export default function PublicContractPage() {
                 </button>
                 <button
                   onClick={() => setSignatureType("drawn")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium ${
                     signatureType === "drawn"
                       ? "bg-blue-600 text-white"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -146,7 +146,7 @@ export default function PublicContractPage() {
                     ref={(ref) => setCanvasRef(ref)}
                     width={600}
                     height={150}
-                    className="w-full cursor-crosshair"
+                    className="w-full cursor-crosshair touch-none"
                     onMouseDown={(e) => {
                       const canvas = e.currentTarget;
                       const ctx = canvas.getContext("2d");
@@ -170,6 +170,31 @@ export default function PublicContractPage() {
                       };
                       document.addEventListener("mousemove", onMove);
                       document.addEventListener("mouseup", onUp);
+                    }}
+                    onTouchStart={(e) => {
+                      const canvas = e.currentTarget;
+                      const ctx = canvas.getContext("2d");
+                      if (!ctx) return;
+                      const rect = canvas.getBoundingClientRect();
+                      const touch = e.touches[0];
+                      const x = touch.clientX - rect.left;
+                      const y = touch.clientY - rect.top;
+                      ctx.beginPath();
+                      ctx.moveTo(x, y);
+                      ctx.strokeStyle = "#000";
+                      ctx.lineWidth = 2;
+                    }}
+                    onTouchMove={(e) => {
+                      e.preventDefault();
+                      const canvas = e.currentTarget;
+                      const ctx = canvas.getContext("2d");
+                      if (!ctx) return;
+                      const rect = canvas.getBoundingClientRect();
+                      const touch = e.touches[0];
+                      const x = touch.clientX - rect.left;
+                      const y = touch.clientY - rect.top;
+                      ctx.lineTo(x, y);
+                      ctx.stroke();
                     }}
                   />
                 </div>

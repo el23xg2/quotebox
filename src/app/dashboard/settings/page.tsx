@@ -5,11 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
   const [email, setEmail] = useState("");
   const [plan, setPlan] = useState("free");
+  const [status, setStatus] = useState("active");
+  const [isPro, setIsPro] = useState(false);
+  const [currentPeriodEnd, setCurrentPeriodEnd] = useState<string | null>(null);
+  const [usage, setUsage] = useState<{ clients: number; quotes: number; contracts: number; invoices: number; totalDocuments: number } | null>(null);
+  const [limits, setLimits] = useState<{ clients: number; documents: number } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cancelling, setCancelling] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     loadProfile();
@@ -21,10 +29,52 @@ export default function SettingsPage() {
     if (user) {
       setEmail(user.email || "");
     }
+
+    // Fetch subscription info
+    try {
+      const res = await fetch("/api/subscription");
+      const data = await res.json();
+      if (data.plan) {
+        setPlan(data.plan);
+        setStatus(data.status);
+        setIsPro(data.isPro);
+        setCurrentPeriodEnd(data.currentPeriodEnd);
+        setUsage(data.usage);
+        setLimits(data.limits);
+      }
+    } catch (err) {
+      console.error("Failed to load subscription:", err);
+    }
+
     setLoading(false);
   }
 
+  async function handleCancel() {
+    if (!confirm("Are you sure you want to cancel your subscription? You'll lose Pro access at the end of the billing period.")) return;
+    setCancelling(true);
+    try {
+      const res = await fetch("/api/stripe/cancel-subscription", { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Subscription cancelled. You'll retain Pro access until the end of the billing period.");
+        loadProfile();
+      } else {
+        alert(data.error || "Failed to cancel subscription.");
+      }
+    } catch {
+      alert("Failed to cancel subscription.");
+    }
+    setCancelling(false);
+  }
+
   if (loading) return <p className="text-sm text-gray-500">Loading...</p>;
+
+  const planNames: Record<string, string> = {
+    free: "Free Plan",
+    pro_monthly: "Pro Monthly",
+    pro_yearly: "Pro Yearly",
+    lifetime: "Lifetime",
+  };
 
   return (
     <div className="max-w-lg">
@@ -54,28 +104,69 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
           <h2 className="font-semibold text-gray-900">Subscription</h2>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <p className="font-medium text-gray-900">
-                {plan === "free" ? "Free Plan" : "Pro Plan"}
+                {planNames[plan] || plan}
               </p>
               <p className="text-sm text-gray-500">
-                {plan === "free"
-                  ? "1 client, 3 documents per month"
-                  : "Unlimited clients & documents"}
+                {isPro ? "Unlimited clients & documents" : `Limited to ${limits?.clients || 3} clients, ${limits?.documents || 5} documents`}
               </p>
+              {status === "past_due" && (
+                <p className="text-sm text-red-500 mt-1">Payment past due — please update your payment method.</p>
+              )}
+              {currentPeriodEnd && isPro && (
+                <p className="text-xs text-gray-400 mt-1">
+                  {status === "canceled" ? "Access until: " : "Renews: "}
+                  {new Date(currentPeriodEnd).toLocaleDateString()}
+                </p>
+              )}
             </div>
-            <Button variant="outline" size="sm">
-              {plan === "free" ? "Upgrade" : "Manage"}
-            </Button>
+            {plan === "free" ? (
+              <Button variant="outline" size="sm" onClick={() => router.push("/dashboard/pricing")}>
+                Upgrade
+              </Button>
+            ) : status === "active" ? (
+              <Button variant="outline" size="sm" onClick={handleCancel} disabled={cancelling}>
+                {cancelling ? "Cancelling..." : "Cancel"}
+              </Button>
+            ) : null}
           </div>
+
+          {usage && limits && !isPro && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Usage</h3>
+              <div className="space-y-2">
+                <UsageBar label="Clients" current={usage.clients} max={limits.clients} />
+                <UsageBar label="Documents" current={usage.totalDocuments} max={limits.documents} />
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+function UsageBar({ label, current, max }: { label: string; current: number; max: number }) {
+  const pct = Math.min((current / max) * 100, 100);
+  return (
+    <div>
+      <div className="flex justify-between text-xs text-gray-500 mb-1">
+        <span>{label}</span>
+        <span>{current} / {max}</span>
+      </div>
+      <div className="w-full bg-gray-100 rounded-full h-2">
+        <div
+          className={`h-2 rounded-full transition-all ${pct >= 90 ? "bg-red-500" : pct >= 70 ? "bg-yellow-500" : "bg-blue-500"}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
     </div>
   );
 }

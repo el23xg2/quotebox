@@ -35,7 +35,7 @@ export async function POST(
   }
 
   const invoiceUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/public/invoices/${id}`;
-  const amount = (invoice.total / 100).toFixed(2);
+  const amount = ((invoice.total / 100).toFixed(2));
 
   if (invoice.clients?.email) {
     const emailContent = getInvoiceSentEmail(

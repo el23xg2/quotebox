@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { formatCurrency } from "@/lib/utils";
 import { ArrowLeft, FileText, FileSignature, Receipt, Pencil } from "lucide-react";
 import Link from "next/link";
 
@@ -120,7 +121,7 @@ export default function ClientDetailPage() {
                 {quotes.map((q) => (
                   <div key={q.id} className="flex items-center justify-between py-2">
                     <p className="text-sm font-medium text-gray-900">
-                      ${(q.total / 100).toFixed(2)}
+                      {formatCurrency(q.total)}
                     </p>
                     <Badge status={q.status} />
                   </div>
@@ -172,7 +173,7 @@ export default function ClientDetailPage() {
                 {invoices.map((inv) => (
                   <div key={inv.id} className="flex items-center justify-between py-2">
                     <p className="text-sm font-medium text-gray-900">
-                      ${(inv.total / 100).toFixed(2)}
+                      {formatCurrency(inv.total)}
                     </p>
                     <Badge status={inv.status} />
                   </div>

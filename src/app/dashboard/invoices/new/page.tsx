@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
-import { generateInvoiceNumber } from "@/lib/utils";
+import { generateInvoiceNumber, formatCurrency } from "@/lib/utils";
 import { Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 
@@ -109,6 +109,15 @@ function NewInvoiceForm() {
 
     setLoading(true);
     setError("");
+
+    // Check usage limit for free users
+    const limitRes = await fetch("/api/check-limit?type=document");
+    const limitData = await limitRes.json();
+    if (!limitData.allowed) {
+      setError(`${limitData.reason} Please upgrade to Pro to create more documents.`);
+      setLoading(false);
+      return;
+    }
 
     const supabase = createSupabaseBrowserClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -262,7 +271,7 @@ function NewInvoiceForm() {
                     </div>
                   </div>
                   <div className="w-24 pt-2 text-right text-sm text-gray-700">
-                    ${((item.quantity * item.unit_price) / 100).toFixed(2)}
+                    {formatCurrency(item.quantity * item.unit_price)}
                   </div>
                   <button type="button" onClick={() => removeItem(index)} className="pt-2 text-gray-400 hover:text-red-500">
                     <Trash2 className="h-4 w-4" />
@@ -279,7 +288,7 @@ function NewInvoiceForm() {
               <div className="w-64">
                 <div className="flex justify-between font-semibold text-gray-900">
                   <span>Total</span>
-                  <span>${(total / 100).toFixed(2)}</span>
+                  <span>{formatCurrency(total)}</span>
                 </div>
               </div>
             </div>

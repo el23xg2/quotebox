@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 
 interface Client {
@@ -78,7 +79,7 @@ function NewContractForm() {
       if (data) {
         setQuoteData(data);
         setTitle(`Service Agreement - ${data.quote_number}`);
-        setContent(`SCOPE OF SERVICES\nThe service provider agrees to perform the services described in Quote #${data.quote_number} for a total of $${(data.total / 100).toFixed(2)}.\n\n${DEFAULT_TERMS}`);
+        setContent(`SCOPE OF SERVICES\nThe service provider agrees to perform the services described in Quote #${data.quote_number} for a total of ${formatCurrency(data.total)}.\n\n${DEFAULT_TERMS}`);
       }
     }
   }
@@ -96,6 +97,15 @@ function NewContractForm() {
 
     setLoading(true);
     setError("");
+
+    // Check usage limit for free users
+    const limitRes = await fetch("/api/check-limit?type=document");
+    const limitData = await limitRes.json();
+    if (!limitData.allowed) {
+      setError(`${limitData.reason} Please upgrade to Pro to create more documents.`);
+      setLoading(false);
+      return;
+    }
 
     const supabase = createSupabaseBrowserClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -183,7 +193,7 @@ function NewContractForm() {
             )}
             {quoteData && (
               <p className="text-sm text-gray-600">
-                Based on Quote #{quoteData.quote_number} — ${(quoteData.total / 100).toFixed(2)}
+                Based on Quote #{quoteData.quote_number} — {formatCurrency(quoteData.total)}
               </p>
             )}
           </CardContent>

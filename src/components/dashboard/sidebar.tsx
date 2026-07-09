@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -12,6 +13,7 @@ import {
   CreditCard,
   Settings,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 
 const navItems = [
@@ -26,6 +28,25 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [plan, setPlan] = useState<string | null>(null);
+  const [isPro, setIsPro] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/subscription")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.plan) {
+          setPlan(data.plan);
+          setIsPro(data.isPro);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const planLabel = isPro ? "Pro" : "Free";
+  const planBadgeClass = isPro
+    ? "bg-blue-100 text-blue-700"
+    : "bg-gray-100 text-gray-600";
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r border-gray-200 bg-white">
@@ -58,7 +79,18 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t border-gray-100 px-3 py-4">
+      <div className="border-t border-gray-100 px-3 py-4 space-y-2">
+        {plan && (
+          <Link
+            href="/dashboard/settings"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm"
+          >
+            <Sparkles className="h-4 w-4 text-gray-400" />
+            <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${planBadgeClass}`}>
+              {planLabel}
+            </span>
+          </Link>
+        )}
         <form action="/auth/signout" method="POST">
           <button
             type="submit"

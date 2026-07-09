@@ -1,0 +1,45 @@
+---
+description: QuoteBox项目上下文 - 在每次对话前阅读
+alwaysApply: true
+---
+
+# QuoteBox 项目核心上下文
+
+在开始每次对话前，请先阅读以下三个文档：
+
+## 1. 市场调研文档
+**路径**: `docs/市场调研报告.md`
+
+包含：
+- 三条路的调研结果（新需求/烂工具替代/复刻）
+- HoneyBook 替代品的详细分析（为什么选这个方向）
+- 竞争格局、定价策略、收入测算
+
+## 2. SETUP.md
+**路径**: `docs/SETUP.md`
+
+包含：
+- 项目配置指南
+- 依赖的服务（Supabase, Stripe, Resend）
+
+## 3. QuoteBox MVP Plan
+**路径**: `docs/quotebox_mvp_plan.md`
+
+包含：
+- MVP 功能清单（所有已完成项目）
+- 项目定位和架构决策
+
+## 4. 下一步行动计划
+**路径**: `docs/next-steps.md`
+
+包含：
+- 当前最紧急的任务（bug 修复、付费墙、发布准备）
+- 优先级排序和时间线
+
+## 项目状态
+- 项目路径: `C:\Users\MOVA\Desktop\quotebox`
+- 技术栈: Next.js + Supabase + Tailwind CSS + Stripe + Resend
+- 部署: Railway (`https://quotebox-production.up.railway.app`)
+- GitHub: `https://github.com/el23xg2/quotebox`
+- 定价: $9/月（比 HoneyBook $36/月便宜 75%）
+- 目标用户: 美国/欧洲自由职业者（摄影师、设计师、咨询师）

@@ -28,6 +28,15 @@ export default function NewClientPage() {
     setLoading(true);
     setError("");
 
+    // Check usage limit for free users
+    const limitRes = await fetch("/api/check-limit?type=client");
+    const limitData = await limitRes.json();
+    if (!limitData.allowed) {
+      setError(`${limitData.reason} Please upgrade to Pro to create more clients.`);
+      setLoading(false);
+      return;
+    }
+
     const supabase = createSupabaseBrowserClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;

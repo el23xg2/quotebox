@@ -57,7 +57,7 @@ export default function PricingPage() {
         "PDF exports",
         "Priority support",
       ],
-      priceId: "price_pro_monthly",
+      priceId: "price_1Tr7b3E3wdC54bTS6nwrElpd",
       popular: true,
     },
     {
@@ -70,7 +70,7 @@ export default function PricingPage() {
         "2 months free",
         "Annual billing discount",
       ],
-      priceId: "price_pro_yearly",
+      priceId: "price_1Tr7cQE3wdC54bTSuFC9Oncj",
     },
     {
       name: "Lifetime",
@@ -82,7 +82,7 @@ export default function PricingPage() {
         "No recurring payments",
         "Future updates included",
       ],
-      priceId: "price_lifetime",
+      priceId: "price_1Tr7eHE3wdC54bTSKgX90Hpr",
     },
   ];
 

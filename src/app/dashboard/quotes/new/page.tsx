@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
-import { generateQuoteNumber } from "@/lib/utils";
+import { generateQuoteNumber, formatCurrency } from "@/lib/utils";
 import { Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 
@@ -94,6 +94,15 @@ function NewQuoteForm() {
 
     setLoading(true);
     setError("");
+
+    // Check usage limit for free users
+    const limitRes = await fetch("/api/check-limit?type=document");
+    const limitData = await limitRes.json();
+    if (!limitData.allowed) {
+      setError(`${limitData.reason} Please upgrade to Pro to create more documents.`);
+      setLoading(false);
+      return;
+    }
 
     const supabase = createSupabaseBrowserClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -256,7 +265,7 @@ function NewQuoteForm() {
                     />
                   </div>
                   <div className="w-24 pt-2 text-right text-sm text-gray-700">
-                    ${((item.quantity * item.unit_price) / 100).toFixed(2)}
+                    {formatCurrency(item.quantity * item.unit_price)}
                   </div>
                   <button
                     type="button"
@@ -311,23 +320,23 @@ function NewQuoteForm() {
               <div className="border-t pt-3 space-y-1">
                 <div className="flex justify-between text-sm text-gray-600">
                   <span>Subtotal</span>
-                  <span>${(subtotal / 100).toFixed(2)}</span>
+                  <span>{formatCurrency(subtotal)}</span>
                 </div>
                 {taxRate > 0 && (
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Tax ({taxRate}%)</span>
-                    <span>${(taxAmount / 100).toFixed(2)}</span>
+                    <span>{formatCurrency(taxAmount)}</span>
                   </div>
                 )}
                 {discount > 0 && (
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Discount ({discount}%)</span>
-                    <span>-${(discountAmount / 100).toFixed(2)}</span>
+                    <span>-{formatCurrency(discountAmount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between font-semibold text-gray-900 pt-1 border-t">
                   <span>Total</span>
-                  <span>${(total / 100).toFixed(2)}</span>
+                  <span>{formatCurrency(total)}</span>
                 </div>
               </div>
             </div>

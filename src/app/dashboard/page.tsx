@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileText, FileSignature, Receipt, Users, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/lib/utils";
 
 const DEMO_STATS = {
   clients: 0,
@@ -95,7 +96,7 @@ export default async function DashboardPage() {
             <div>
               <p className="text-sm text-gray-500">Earned</p>
               <p className="text-2xl font-bold text-gray-900">
-                ${(data.earned / 100).toLocaleString()}
+                {formatCurrency(data.earned)}
               </p>
             </div>
           </CardContent>
