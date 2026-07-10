@@ -22,20 +22,36 @@ interface Quote {
   clients?: any;
 }
 
-const DEFAULT_TERMS = `SCOPE OF SERVICES
-The service provider agrees to perform the services described in the accompanying quote or as outlined in this agreement.
+const DEFAULT_TERMS = `SERVICE AGREEMENT
 
-PAYMENT TERMS
-Payment is due within 30 days of the invoice date. Late payments may incur a 1.5% monthly fee.
+This Service Agreement ("Agreement") is entered into between the service provider ("Provider") and the client ("Client") for the services described below.
 
-TERMINATION
-Either party may terminate this agreement with 14 days written notice.
+1. SERVICES
+Provider agrees to perform the services as described in the accompanying quote or as mutually agreed upon by both parties.
 
-LIMITATION OF LIABILITY
-The service provider's total liability shall not exceed the total amount paid under this agreement.
+2. PAYMENT TERMS
+Client agrees to pay the total amount stated in the invoice. Payment is due within 30 days of the invoice date. Late payments may incur a 1.5% monthly finance charge.
 
-GOVERNING LAW
-This agreement shall be governed by the laws of the State of [State].`;
+3. DELIVERABLES & TIMELINE
+Provider will deliver the agreed-upon services within a reasonable timeframe. Any changes to the scope of work must be agreed upon in writing and may affect the total fee and delivery timeline.
+
+4. REVISIONS
+Provider agrees to include up to two (2) rounds of revisions at no additional cost. Additional revisions may be billed at Provider's standard hourly rate.
+
+5. CONFIDENTIALITY
+Both parties agree to keep confidential any proprietary or sensitive information shared during the course of this engagement.
+
+6. TERMINATION
+Either party may terminate this Agreement with 14 days written notice. Client shall pay for all services rendered up to the date of termination.
+
+7. INTELLECTUAL PROPERTY
+Upon full payment, Client receives full ownership of the final deliverables. Provider retains the right to display the work in their portfolio.
+
+8. LIMITATION OF LIABILITY
+Provider's total liability under this Agreement shall not exceed the total amount paid by Client under this Agreement. Provider is not liable for any indirect or consequential damages.
+
+9. GOVERNING LAW
+This Agreement shall be governed by the laws of the state or country in which the Provider operates.`;
 
 function NewContractForm() {
   const router = useRouter();
@@ -79,7 +95,7 @@ function NewContractForm() {
       if (data) {
         setQuoteData(data);
         setTitle(`Service Agreement - ${data.quote_number}`);
-        setContent(`SCOPE OF SERVICES\nThe service provider agrees to perform the services described in Quote #${data.quote_number} for a total of ${formatCurrency(data.total)}.\n\n${DEFAULT_TERMS}`);
+        setContent(`SERVICE AGREEMENT\n\nThis Service Agreement ("Agreement") is entered into between the service provider ("Provider") and the client ("Client") for Quote #${data.quote_number} in the amount of ${formatCurrency(data.total)}.\n\n1. SERVICES\nProvider agrees to perform the services described in Quote #${data.quote_number}.\n\n2. PAYMENT TERMS\nClient agrees to pay the total amount of ${formatCurrency(data.total)}. Payment is due within 30 days of the invoice date. Late payments may incur a 1.5% monthly finance charge.\n\n3. DELIVERABLES & TIMELINE\nProvider will deliver the agreed-upon services within a reasonable timeframe.\n\n4. REVISIONS\nProvider agrees to include up to two (2) rounds of revisions at no additional cost.\n\n5. CONFIDENTIALITY\nBoth parties agree to keep confidential any proprietary or sensitive information shared during this engagement.\n\n6. TERMINATION\nEither party may terminate this Agreement with 14 days written notice. Client shall pay for all services rendered up to the date of termination.\n\n7. INTELLECTUAL PROPERTY\nUpon full payment, Client receives full ownership of the final deliverables.\n\n8. LIMITATION OF LIABILITY\nProvider's total liability under this Agreement shall not exceed the total amount paid by Client.\n\n9. GOVERNING LAW\nThis Agreement shall be governed by the laws of the state or country in which the Provider operates.`);
       }
     }
   }
