@@ -54,7 +54,12 @@ export async function POST(
   }
 
   // Send notification email to the business owner
-  const { data: owner } = await supabase.auth.admin.getUserById(existing.user_id);
+  console.log("Sending quote accepted notification for quote:", id, "user_id:", existing.user_id);
+  const { data: owner, error: ownerError } = await supabase.auth.admin.getUserById(existing.user_id);
+
+  if (ownerError) {
+    console.error("Error fetching owner:", ownerError);
+  }
 
   if (owner?.user?.email) {
     const dashboardUrl = `${baseUrl}/dashboard/quotes/${id}`;
@@ -65,11 +70,14 @@ export async function POST(
       dashboardUrl
     );
 
-    await sendEmail({
+    const result = await sendEmail({
       to: owner.user.email,
       subject: emailContent.subject,
       html: emailContent.html,
     });
+    console.log("Email send result:", JSON.stringify(result));
+  } else {
+    console.log("Owner email not found, owner data:", JSON.stringify(owner));
   }
 
   return NextResponse.redirect(
