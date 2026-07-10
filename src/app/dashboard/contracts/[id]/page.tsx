@@ -27,6 +27,9 @@ export default function ContractDetailPage() {
   const [contract, setContract] = useState<ContractDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
 
   useEffect(() => {
     loadContract();
@@ -45,6 +48,29 @@ export default function ContractDetailPage() {
 
     if (data) setContract(data);
     setLoading(false);
+  }
+
+  function startEditing() {
+    if (!contract) return;
+    setEditTitle(contract.title);
+    setEditContent(contract.content);
+    setEditing(true);
+  }
+
+  async function handleSaveEdit() {
+    if (!contract) return;
+    if (!editTitle.trim()) { alert("Title is required."); return; }
+
+    const supabase = createSupabaseBrowserClient();
+    const { error } = await supabase
+      .from("contracts")
+      .update({ title: editTitle, content: editContent })
+      .eq("id", contract.id);
+
+    if (error) { alert("Failed to save: " + error.message); return; }
+
+    setContract({ ...contract, title: editTitle, content: editContent });
+    setEditing(false);
   }
 
   async function handleSend() {
@@ -95,9 +121,16 @@ export default function ContractDetailPage() {
         </div>
         <div className="flex gap-2">
           {contract.status === "draft" && (
-            <Button onClick={handleSend} disabled={sending} className="gap-1">
-              <Send className="h-4 w-4" /> {sending ? "Sending..." : "Send for Signature"}
-            </Button>
+            <>
+              {editing ? (
+                <Button onClick={handleSaveEdit}>Save</Button>
+              ) : (
+                <Button variant="outline" onClick={startEditing}>Edit</Button>
+              )}
+              <Button onClick={handleSend} disabled={sending} className="gap-1">
+                <Send className="h-4 w-4" /> {sending ? "Sending..." : "Send for Signature"}
+              </Button>
+            </>
           )}
           {contract.status === "signed" && (
             <Link href={`/dashboard/invoices/new?contract_id=${contract.id}`}>
@@ -114,9 +147,26 @@ export default function ContractDetailPage() {
           <h2 className="font-semibold text-gray-900">Contract Terms</h2>
         </CardHeader>
         <CardContent>
-          <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700">
-            {contract.content}
-          </pre>
+          {editing ? (
+            <div className="space-y-4">
+              <input
+                type="text"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-lg font-semibold focus:border-blue-500 focus:outline-none"
+              />
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                rows={20}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+          ) : (
+            <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700">
+              {contract.content}
+            </pre>
+          )}
         </CardContent>
       </Card>
 
