@@ -104,7 +104,7 @@ export default function QuoteDetailPage() {
               <Send className="h-4 w-4" /> {sending ? "Sending..." : "Send to Client"}
             </Button>
           )}
-          {(quote.status === "draft" || quote.status === "accepted") && (
+          {quote.status === "accepted" && (
             <Link href={`/dashboard/contracts/new?quote_id=${quote.id}`}>
               <Button variant="outline" className="gap-1">
                 <FileSignature className="h-4 w-4" /> Create Contract

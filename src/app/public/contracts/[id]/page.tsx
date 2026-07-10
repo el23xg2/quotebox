@@ -204,6 +204,11 @@ export default function PublicContractPage() {
                       ctx.lineTo(x, y);
                       ctx.stroke();
                     }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      const ctx = e.currentTarget.getContext("2d");
+                      ctx?.closePath();
+                    }}
                   />
                 </div>
               )}
