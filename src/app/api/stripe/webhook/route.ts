@@ -84,8 +84,8 @@ export async function POST(request: Request) {
               stripe_subscription_id: subscriptionId,
               plan_id: planId,
               status: subscription.status === "active" || subscription.status === "trialing" ? "active" : subscription.status,
-              current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-              current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+              current_period_start: subscription.current_period_start ? new Date(subscription.current_period_start * 1000).toISOString() : new Date().toISOString(),
+              current_period_end: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
             }, { onConflict: "user_id" });
 
             if (upsertError) {
@@ -132,8 +132,8 @@ export async function POST(request: Request) {
             .from("subscriptions")
             .update({
               status: subscription.status === "active" || subscription.status === "trialing" ? "active" : subscription.status,
-              current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-              current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+              current_period_start: subscription.current_period_start ? new Date(subscription.current_period_start * 1000).toISOString() : undefined,
+              current_period_end: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : undefined,
             })
             .eq("stripe_subscription_id", subscriptionId);
 
@@ -154,7 +154,7 @@ export async function POST(request: Request) {
           .from("subscriptions")
           .update({
             status,
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            current_period_end: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
           })
           .eq("stripe_subscription_id", subscription.id);
 
