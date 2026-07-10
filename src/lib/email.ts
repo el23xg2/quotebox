@@ -32,7 +32,7 @@ export async function sendEmail(payload: EmailPayload) {
         body: JSON.stringify({
           from: "QuoteBox <noreply@quotebox.pro>",
           to: [payload.to],
-          reply_to: ["notifications@quotebox.app"],
+          reply_to: ["noreply@quotebox.pro"],
           subject: payload.subject,
           html: payload.html,
         }),
