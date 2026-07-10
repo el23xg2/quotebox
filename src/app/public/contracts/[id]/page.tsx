@@ -48,20 +48,22 @@ export default function PublicContractPage() {
         ? typedSignature
         : canvasRef?.toDataURL() || "";
 
-    const supabase = createSupabaseBrowserClient();
-    await supabase.from("contract_signatures").insert({
-      contract_id: contract.id,
-      type: signatureType,
-      signature_data: signatureData,
+    const res = await fetch(`/api/contracts/${contract.id}/sign`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        signatureType,
+        signatureData,
+        clientName: contract.clients?.name || "Client",
+      }),
     });
 
-    await supabase
-      .from("contracts")
-      .update({
-        status: "signed",
-        signed_at: new Date().toISOString(),
-      })
-      .eq("id", contract.id);
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.error || "Failed to sign contract. Please try again.");
+      setSigning(false);
+      return;
+    }
 
     setSigned(true);
     setSigning(false);

@@ -1,6 +1,5 @@
 // Email notification service for QuoteBox
-// Uses the Supabase Edge Functions or any SMTP provider
-// In MVP, this logs to console; connect to SendGrid/Resend when ready
+// Uses Resend (free tier: 100 emails/day)
 
 interface EmailPayload {
   to: string;
@@ -20,7 +19,6 @@ export async function sendEmail(payload: EmailPayload) {
   }
 
   // In production, use Resend (free tier: 100 emails/day)
-  // Sign up at https://resend.com
   const resendApiKey = process.env.RESEND_API_KEY;
 
   if (resendApiKey) {
@@ -32,7 +30,7 @@ export async function sendEmail(payload: EmailPayload) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "QuoteBox <onboarding@resend.dev>",
+          from: "QuoteBox <noreply@quotebox.pro>",
           to: [payload.to],
           reply_to: ["notifications@quotebox.app"],
           subject: payload.subject,
@@ -72,6 +70,58 @@ export function getQuoteSentEmail(clientName: string, quoteNumber: string, quote
           <div style="text-align: center; margin: 24px 0;">
             <a href="${quoteUrl}" style="background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
               View Quote
+            </a>
+          </div>
+          <p style="color: #6b7280; font-size: 12px; margin-top: 24px;">
+            Powered by QuoteBox — quotes, contracts & invoices for freelancers.
+          </p>
+        </div>
+      </div>
+    `,
+  };
+}
+
+export function getQuoteAcceptedEmail(businessOwnerEmail: string, clientName: string, quoteNumber: string, dashboardUrl: string) {
+  return {
+    subject: `✅ Quote #${quoteNumber} accepted by ${clientName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <div style="background: #16a34a; padding: 20px; border-radius: 12px 12px 0 0; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 24px;">QuoteBox</h1>
+        </div>
+        <div style="padding: 24px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+          <h2 style="margin-top: 0; color: #16a34a;">Quote Accepted! 🎉</h2>
+          <p><strong>${clientName}</strong> has accepted Quote #${quoteNumber}.</p>
+          <p>You can now create a contract based on this quote. Click the button below to go to your dashboard.</p>
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="${dashboardUrl}" style="background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+              View in Dashboard
+            </a>
+          </div>
+          <p style="color: #6b7280; font-size: 12px; margin-top: 24px;">
+            Powered by QuoteBox — quotes, contracts & invoices for freelancers.
+          </p>
+        </div>
+      </div>
+    `,
+  };
+}
+
+export function getContractSignedEmail(businessOwnerEmail: string, clientName: string, contractTitle: string, dashboardUrl: string) {
+  return {
+    subject: `✍️ ${contractTitle} signed by ${clientName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <div style="background: #16a34a; padding: 20px; border-radius: 12px 12px 0 0; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 24px;">QuoteBox</h1>
+        </div>
+        <div style="padding: 24px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+          <h2 style="margin-top: 0; color: #16a34a;">Contract Signed! ✍️</h2>
+          <p><strong>${clientName}</strong> has signed <strong>${contractTitle}</strong>.</p>
+          <p>You can now create an invoice for this contract. Click the button below to go to your dashboard.</p>
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="${dashboardUrl}" style="background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+              View in Dashboard
             </a>
           </div>
           <p style="color: #6b7280; font-size: 12px; margin-top: 24px;">

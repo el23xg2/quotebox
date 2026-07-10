@@ -169,17 +169,29 @@ CREATE POLICY IF NOT EXISTS "Users can manage their own invoice items"
   );
 
 -- Public access policies (for client-facing pages)
--- Allow public read access to quotes
+-- Allow public read access to quotes (sent/accepted)
 CREATE POLICY IF NOT EXISTS "Public can view quotes"
   ON quotes FOR SELECT USING (status IN ('sent', 'accepted'));
 
--- Allow public read access to contracts
+-- Allow public read access to quote items (for public quote page)
+CREATE POLICY IF NOT EXISTS "Public can view quote items"
+  ON quote_items FOR SELECT USING (
+    EXISTS (SELECT 1 FROM quotes WHERE quotes.id = quote_items.quote_id AND quotes.status IN ('sent', 'accepted'))
+  );
+
+-- Allow public read access to contracts (sent/signed)
 CREATE POLICY IF NOT EXISTS "Public can view contracts"
   ON contracts FOR SELECT USING (status IN ('sent', 'signed'));
 
--- Allow public read access to invoices
+-- Allow public read access to invoices (sent/partial/paid)
 CREATE POLICY IF NOT EXISTS "Public can view invoices"
   ON invoices FOR SELECT USING (status IN ('sent', 'partial', 'paid'));
+
+-- Allow public read access to invoice items (for public invoice page)
+CREATE POLICY IF NOT EXISTS "Public can view invoice items"
+  ON invoice_items FOR SELECT USING (
+    EXISTS (SELECT 1 FROM invoices WHERE invoices.id = invoice_items.invoice_id AND invoices.status IN ('sent', 'partial', 'paid'))
+  );
 
 -- Allow public insert to contract signatures
 CREATE POLICY IF NOT EXISTS "Anyone can add signatures"

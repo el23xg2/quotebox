@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { sendEmail, getQuoteAcceptedEmail } from "@/lib/email";
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -24,7 +25,7 @@ export async function POST(
   // Only allow accepting quotes that are currently in "sent" status
   const { data: existing } = await supabase
     .from("quotes")
-    .select("status")
+    .select("status, user_id, quote_number, clients(name)")
     .eq("id", id)
     .single();
 
@@ -44,12 +45,31 @@ export async function POST(
     .from("quotes")
     .update({ status: "accepted", accepted_at: new Date().toISOString() })
     .eq("id", id)
-    .eq("status", "sent"); // extra safety: only update if still "sent"
+    .eq("status", "sent");
 
   if (error) {
     return NextResponse.redirect(
       new URL(`/public/quotes/${id}?error=failed`, baseUrl)
     );
+  }
+
+  // Send notification email to the business owner
+  const { data: owner } = await supabase.auth.admin.getUserById(existing.user_id);
+
+  if (owner?.user?.email) {
+    const dashboardUrl = `${baseUrl}/dashboard/quotes/${id}`;
+    const emailContent = getQuoteAcceptedEmail(
+      owner.user.email,
+      existing.clients?.name || "Client",
+      existing.quote_number,
+      dashboardUrl
+    );
+
+    await sendEmail({
+      to: owner.user.email,
+      subject: emailContent.subject,
+      html: emailContent.html,
+    });
   }
 
   return NextResponse.redirect(
