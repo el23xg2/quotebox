@@ -21,12 +21,30 @@ export async function POST(
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
 
-  const { data: quote, error } = await supabase
+  // Only allow accepting quotes that are currently in "sent" status
+  const { data: existing } = await supabase
+    .from("quotes")
+    .select("status")
+    .eq("id", id)
+    .single();
+
+  if (!existing) {
+    return NextResponse.redirect(
+      new URL(`/public/quotes/${id}?error=not_found`, baseUrl)
+    );
+  }
+
+  if (existing.status !== "sent") {
+    return NextResponse.redirect(
+      new URL(`/public/quotes/${id}`, baseUrl)
+    );
+  }
+
+  const { error } = await supabase
     .from("quotes")
     .update({ status: "accepted", accepted_at: new Date().toISOString() })
     .eq("id", id)
-    .select()
-    .single();
+    .eq("status", "sent"); // extra safety: only update if still "sent"
 
   if (error) {
     return NextResponse.redirect(
