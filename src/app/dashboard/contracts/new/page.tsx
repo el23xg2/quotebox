@@ -72,7 +72,7 @@ function NewContractForm() {
     if (preselectedQuoteId) {
       const { data } = await supabase
         .from("quotes")
-        .select("id, quote_number, total, clients(name)")
+        .select("id, quote_number, total, client_id, clients(name)")
         .eq("id", preselectedQuoteId)
         .single();
 
