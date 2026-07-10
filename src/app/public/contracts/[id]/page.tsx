@@ -154,15 +154,17 @@ export default function PublicContractPage() {
                       const ctx = canvas.getContext("2d");
                       if (!ctx) return;
                       const rect = canvas.getBoundingClientRect();
-                      const x = e.clientX - rect.left;
-                      const y = e.clientY - rect.top;
+                      const scaleX = canvas.width / rect.width;
+                      const scaleY = canvas.height / rect.height;
+                      const x = (e.clientX - rect.left) * scaleX;
+                      const y = (e.clientY - rect.top) * scaleY;
                       ctx.beginPath();
                       ctx.moveTo(x, y);
                       ctx.strokeStyle = "#000";
-                      ctx.lineWidth = 2;
+                      ctx.lineWidth = 2 * scaleX;
                       const onMove = (me: MouseEvent) => {
-                        const rx = me.clientX - rect.left;
-                        const ry = me.clientY - rect.top;
+                        const rx = (me.clientX - rect.left) * scaleX;
+                        const ry = (me.clientY - rect.top) * scaleY;
                         ctx.lineTo(rx, ry);
                         ctx.stroke();
                       };
@@ -178,13 +180,15 @@ export default function PublicContractPage() {
                       const ctx = canvas.getContext("2d");
                       if (!ctx) return;
                       const rect = canvas.getBoundingClientRect();
+                      const scaleX = canvas.width / rect.width;
+                      const scaleY = canvas.height / rect.height;
                       const touch = e.touches[0];
-                      const x = touch.clientX - rect.left;
-                      const y = touch.clientY - rect.top;
+                      const x = (touch.clientX - rect.left) * scaleX;
+                      const y = (touch.clientY - rect.top) * scaleY;
                       ctx.beginPath();
                       ctx.moveTo(x, y);
                       ctx.strokeStyle = "#000";
-                      ctx.lineWidth = 2;
+                      ctx.lineWidth = 2 * scaleX;
                     }}
                     onTouchMove={(e) => {
                       e.preventDefault();
@@ -192,9 +196,11 @@ export default function PublicContractPage() {
                       const ctx = canvas.getContext("2d");
                       if (!ctx) return;
                       const rect = canvas.getBoundingClientRect();
+                      const scaleX = canvas.width / rect.width;
+                      const scaleY = canvas.height / rect.height;
                       const touch = e.touches[0];
-                      const x = touch.clientX - rect.left;
-                      const y = touch.clientY - rect.top;
+                      const x = (touch.clientX - rect.left) * scaleX;
+                      const y = (touch.clientY - rect.top) * scaleY;
                       ctx.lineTo(x, y);
                       ctx.stroke();
                     }}
