@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { formatDate } from "@/lib/utils";
-import { ArrowLeft, Send, Receipt, Printer } from "lucide-react";
+import { ArrowLeft, Send, Receipt } from "lucide-react";
 import Link from "next/link";
 
 interface ContractDetail {
@@ -119,10 +119,7 @@ export default function ContractDetailPage() {
             {contract.clients?.name && ` — for ${contract.clients.name}`}
           </p>
         </div>
-        <div className="flex gap-2 no-print">
-          <Button variant="outline" onClick={() => window.print()} className="gap-1">
-            <Printer className="h-4 w-4" /> PDF
-          </Button>
+        <div className="flex gap-2">
           {contract.status === "draft" && (
             <>
               {editing ? (

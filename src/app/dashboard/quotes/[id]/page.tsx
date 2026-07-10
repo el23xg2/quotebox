@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { ArrowLeft, Send, FileSignature, Printer } from "lucide-react";
+import { ArrowLeft, Send, FileSignature } from "lucide-react";
 import Link from "next/link";
 
 interface QuoteDetail {
@@ -98,10 +98,7 @@ export default function QuoteDetailPage() {
             {quote.clients?.name && ` — for ${quote.clients.name}`}
           </p>
         </div>
-        <div className="flex gap-2 no-print">
-          <Button variant="outline" onClick={() => window.print()} className="gap-1">
-            <Printer className="h-4 w-4" /> PDF
-          </Button>
+        <div className="flex gap-2">
           {quote.status === "draft" && (
             <Button onClick={handleSend} disabled={sending} className="gap-1">
               <Send className="h-4 w-4" /> {sending ? "Sending..." : "Send to Client"}
