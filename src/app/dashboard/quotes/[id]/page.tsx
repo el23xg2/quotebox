@@ -114,24 +114,6 @@ export default function QuoteDetailPage() {
         </div>
       </div>
 
-      {/* Public link - only show after sending */}
-      {quote.status !== "draft" && (
-        <Card className="mb-6">
-        <CardContent className="py-3">
-          <p className="text-sm text-gray-500">
-            Client view link:{" "}
-            <a
-              href={`${window.location.origin}/public/quotes/${quote.id}`}
-              target="_blank"
-              className="text-blue-600 hover:underline"
-            >
-              {`${window.location.origin}/public/quotes/${quote.id}`}
-            </a>
-          </p>
-        </CardContent>
-      </Card>
-      )}
-
       {/* Quote preview */}
       <Card>
         <CardHeader>

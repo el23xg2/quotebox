@@ -163,20 +163,6 @@ export default function InvoiceDetailPage() {
         </CardContent>
       </Card>
 
-      {invoice.status !== "draft" && (
-        <div className="mt-6">
-          <p className="text-sm text-gray-500">
-            Client payment link:{" "}
-            <a
-              href={`${window.location.origin}/public/invoices/${invoice.id}`}
-              target="_blank"
-              className="text-blue-600 hover:underline"
-            >
-              {`${window.location.origin}/public/invoices/${invoice.id}`}
-            </a>
-          </p>
-        </div>
-      )}
     </div>
   );
 }
