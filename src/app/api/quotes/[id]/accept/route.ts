@@ -60,7 +60,7 @@ export async function POST(
     const dashboardUrl = `${baseUrl}/dashboard/quotes/${id}`;
     const emailContent = getQuoteAcceptedEmail(
       owner.user.email,
-      existing.clients?.name || "Client",
+      (existing.clients as any)?.name || "Client",
       existing.quote_number,
       dashboardUrl
     );
