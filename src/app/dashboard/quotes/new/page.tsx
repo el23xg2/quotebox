@@ -76,9 +76,9 @@ function NewQuoteForm() {
   }
 
   function updateItem(index: number, field: keyof LineItem, value: string | number) {
-    const newItems = [...items];
-    (newItems[index] as any)[field] = value;
-    setItems(newItems);
+    setItems((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+    );
   }
 
   async function handleSave(e: React.FormEvent) {
@@ -127,6 +127,12 @@ function NewQuoteForm() {
 
     if (quoteError) {
       setError(quoteError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (!quote) {
+      setError("Failed to create quote. Please try again.");
       setLoading(false);
       return;
     }

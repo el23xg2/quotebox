@@ -149,6 +149,12 @@ function NewContractForm() {
       return;
     }
 
+    if (!contract) {
+      setError("Failed to create contract. Please try again.");
+      setLoading(false);
+      return;
+    }
+
     setContractId(contract.id);
     setSuccess(true);
     setLoading(false);

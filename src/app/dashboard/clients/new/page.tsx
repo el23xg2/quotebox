@@ -55,11 +55,16 @@ export default function NewClientPage() {
 
     if (insertError) {
       console.error("Insert error:", insertError);
-      setError(`创建失败: ${insertError.message}`);
+      setError(`Failed to create client: ${insertError.message}`);
       setLoading(false);
       return;
     }
 
+    if (!data) {
+      setError("Failed to create client. Please try again.");
+      setLoading(false);
+      return;
+    }
     router.push(`/dashboard/clients/${data.id}`);
   }
 

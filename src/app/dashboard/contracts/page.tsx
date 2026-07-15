@@ -83,7 +83,12 @@ export default function ContractsPage() {
             <p className="text-sm text-gray-500">Loading...</p>
           ) : filtered.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-sm text-gray-500">No contracts found.</p>
+              <p className="text-sm text-gray-500 mb-4">No contracts found.</p>
+              <Link href="/dashboard/contracts/new">
+                <span className="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors">
+                  Create your first contract
+                </span>
+              </Link>
             </div>
           ) : (
             <div className="divide-y divide-gray-100">

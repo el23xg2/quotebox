@@ -91,9 +91,9 @@ function NewInvoiceForm() {
   }
 
   function updateItem(index: number, field: keyof LineItem, value: string | number) {
-    const newItems = [...items];
-    (newItems[index] as any)[field] = value;
-    setItems(newItems);
+    setItems((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+    );
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -142,6 +142,12 @@ function NewInvoiceForm() {
 
     if (invError) {
       setError(invError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (!invoice) {
+      setError("Failed to create invoice. Please try again.");
       setLoading(false);
       return;
     }

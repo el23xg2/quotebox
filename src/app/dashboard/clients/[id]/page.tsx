@@ -26,12 +26,16 @@ interface RelatedItem {
   created_at: string;
 }
 
+interface RelatedContract extends RelatedItem {
+  title: string;
+}
+
 export default function ClientDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [client, setClient] = useState<ClientDetail | null>(null);
   const [quotes, setQuotes] = useState<RelatedItem[]>([]);
-  const [contracts, setContracts] = useState<RelatedItem[]>([]);
+  const [contracts, setContracts] = useState<RelatedContract[]>([]);
   const [invoices, setInvoices] = useState<RelatedItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +63,7 @@ export default function ClientDetailPage() {
 
     const [quotesRes, contractsRes, invoicesRes] = await Promise.all([
       supabase.from("quotes").select("*").eq("client_id", params.id).order("created_at", { ascending: false }),
-      supabase.from("contracts").select("*").eq("client_id", params.id).order("created_at", { ascending: false }),
+      supabase.from("contracts").select("id, title, status, total, created_at").eq("client_id", params.id).order("created_at", { ascending: false }),
       supabase.from("invoices").select("*").eq("client_id", params.id).order("created_at", { ascending: false }),
     ]);
 
@@ -69,13 +73,21 @@ export default function ClientDetailPage() {
     setLoading(false);
   }
 
+  function goBack() {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/dashboard/clients");
+    }
+  }
+
   if (loading) return <p className="text-sm text-gray-500">Loading...</p>;
   if (!client) return null;
 
   return (
     <div>
       <button
-        onClick={() => router.back()}
+        onClick={goBack}
         className="mb-6 flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"
       >
         <ArrowLeft className="h-4 w-4" /> Back
@@ -147,7 +159,7 @@ export default function ClientDetailPage() {
               <div className="divide-y divide-gray-100">
                 {contracts.map((c) => (
                   <div key={c.id} className="flex items-center justify-between py-2">
-                    <p className="text-sm text-gray-900">Contract</p>
+                    <p className="text-sm text-gray-900">{c.title}</p>
                     <Badge status={c.status} />
                   </div>
                 ))}

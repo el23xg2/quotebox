@@ -163,8 +163,8 @@ export async function POST(request: Request) {
           plan_id: planId,
           status: "pending",
         });
-      } catch {
-        // Table may not exist, ignore
+      } catch (err) {
+        console.error("Failed to save checkout session:", err);
       }
     }
 

@@ -40,7 +40,10 @@ export function Sidebar() {
           setIsPro(data.isPro);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        setPlan("free");
+        setIsPro(false);
+      });
   }, []);
 
   const planLabel = isPro ? "Pro" : "Free";

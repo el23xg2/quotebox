@@ -82,18 +82,26 @@ export default function ContractDetailPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(`发送失败: ${data.error || "未知错误"}`);
+        alert(`Failed to send: ${data.error || "Unknown error"}`);
         setSending(false);
         return;
       }
 
-      alert("合同已成功发送给客户签名！");
+      alert("Contract sent to client for signing!");
       setContract({ ...contract, status: "sent" });
     } catch (err) {
-      alert("发送失败: 网络错误");
+      alert("Failed to send: Network error");
       console.error(err);
     }
     setSending(false);
+  }
+
+  function goBack() {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/dashboard/contracts");
+    }
   }
 
   if (loading) return <p className="text-sm text-gray-500">Loading...</p>;
@@ -102,7 +110,7 @@ export default function ContractDetailPage() {
   return (
     <div className="max-w-3xl">
       <button
-        onClick={() => router.back()}
+        onClick={goBack}
         className="mb-6 flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"
       >
         <ArrowLeft className="h-4 w-4" /> Back

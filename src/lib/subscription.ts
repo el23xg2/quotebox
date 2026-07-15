@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-const FREE_LIMITS = {
+export const FREE_LIMITS = {
   clients: 3,
   documents: 5, // total quotes + contracts + invoices
 };
@@ -38,7 +38,7 @@ export async function checkUsageLimit(
 ): Promise<{ allowed: boolean; reason?: string }> {
   const supabase = getServiceSupabase();
   if (!supabase) {
-    return { allowed: true }; // Allow if DB not configured
+    return { allowed: false, reason: "Service not configured. Please contact support." };
   }
 
   const sub = await getUserSubscription(userId);

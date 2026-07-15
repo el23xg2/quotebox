@@ -21,21 +21,16 @@ export default function LoginPage() {
 
     const supabase = createSupabaseBrowserClient();
 
-    // Log config for debugging
-    console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-    console.log("Redirect to:", `${window.location.origin}/auth/callback`);
-
     const { error: signInError } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-        // Also try the explicit production URL as a fallback
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/auth/callback`,
       },
     });
 
     if (signInError) {
       console.error("Sign in error details:", signInError);
-      setError(`登录失败: ${signInError.message}`);
+      setError(`Sign in failed: ${signInError.message}`);
       setLoading(false);
       return;
     }

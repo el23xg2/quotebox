@@ -1,18 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
+interface PublicContract {
+  id: string;
+  title: string;
+  content: string;
+  status: string;
+  clients: { name: string } | null;
+}
+
 export default function PublicContractPage() {
   const params = useParams();
-  const [contract, setContract] = useState<any>(null);
+  const [contract, setContract] = useState<PublicContract | null>(null);
   const [signed, setSigned] = useState(false);
   const [signatureType, setSignatureType] = useState<"typed" | "drawn">("typed");
   const [typedSignature, setTypedSignature] = useState("");
   const [loading, setLoading] = useState(true);
   const [signing, setSigning] = useState(false);
-  const [canvasRef, setCanvasRef] = useState<HTMLCanvasElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     loadContract();
@@ -46,7 +54,7 @@ export default function PublicContractPage() {
     const signatureData =
       signatureType === "typed"
         ? typedSignature
-        : canvasRef?.toDataURL() || "";
+        : canvasRef.current?.toDataURL() || "";
 
     const res = await fetch(`/api/contracts/${contract.id}/sign`, {
       method: "POST",
@@ -145,7 +153,7 @@ export default function PublicContractPage() {
               ) : (
                 <div className="border border-gray-300 rounded-lg">
                   <canvas
-                    ref={(ref) => setCanvasRef(ref)}
+                    ref={canvasRef}
                     width={600}
                     height={150}
                     className="w-full cursor-crosshair touch-none"

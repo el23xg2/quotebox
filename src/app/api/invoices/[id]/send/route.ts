@@ -53,6 +53,10 @@ export async function POST(
 
     if (!emailResult.success) {
       console.error("Email send failed:", emailResult.error || emailResult);
+      return NextResponse.json({
+        success: true,
+        warning: "Invoice saved but email delivery failed. Please try sending again.",
+      });
     }
   }
 

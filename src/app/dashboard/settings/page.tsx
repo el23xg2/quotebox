@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { FREE_LIMITS } from "@/lib/subscription";
 import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
@@ -115,7 +116,7 @@ export default function SettingsPage() {
                 {planNames[plan] || plan}
               </p>
               <p className="text-sm text-gray-500">
-                {isPro ? "Unlimited clients & documents" : `Limited to ${limits?.clients || 3} clients, ${limits?.documents || 5} documents`}
+                {isPro ? "Unlimited clients & documents" : `Limited to ${FREE_LIMITS.clients} clients, ${FREE_LIMITS.documents} documents`}
               </p>
               {status === "past_due" && (
                 <p className="text-sm text-red-500 mt-1">Payment past due — please update your payment method.</p>

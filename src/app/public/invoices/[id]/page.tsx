@@ -5,9 +5,19 @@ import { useParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { formatCurrency } from "@/lib/utils";
 
+interface PublicInvoice {
+  id: string;
+  invoice_number: string;
+  status: string;
+  total: number;
+  due_date: string;
+  clients: { name: string; email: string; company?: string } | null;
+  invoice_items: { id: string; description: string; quantity: number; unit_price: number; amount: number }[];
+}
+
 export default function PublicInvoicePage() {
   const params = useParams();
-  const [invoice, setInvoice] = useState<any>(null);
+  const [invoice, setInvoice] = useState<PublicInvoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
   const [paymentReturned, setPaymentReturned] = useState(false);
@@ -19,6 +29,23 @@ export default function PublicInvoicePage() {
     }
     loadInvoice();
   }, [params.id]);
+
+  // Poll for payment confirmation when waiting for webhook to fire
+  useEffect(() => {
+    if (!paymentReturned || invoice?.status === "paid") return;
+    const interval = setInterval(async () => {
+      const supabase = createSupabaseBrowserClient();
+      const { data } = await supabase
+        .from("invoices")
+        .select("status")
+        .eq("id", params.id)
+        .single();
+      if (data?.status === "paid") {
+        window.location.reload();
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [paymentReturned, invoice?.status, params.id]);
 
   async function loadInvoice() {
     const supabase = createSupabaseBrowserClient();
@@ -170,7 +197,7 @@ export default function PublicInvoicePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {invoice.invoice_items.map((item: any) => (
+                  {invoice.invoice_items.map((item) => (
                     <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50/50">
                       <td className="py-4 px-6 sm:px-10 text-sm text-gray-900">{item.description}</td>
                       <td className="py-4 px-6 sm:px-10 text-sm text-right text-gray-700">{item.quantity}</td>
