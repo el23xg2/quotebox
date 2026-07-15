@@ -131,7 +131,7 @@ export default function SettingsPage() {
               <Button variant="outline" size="sm" onClick={() => router.push("/dashboard/pricing")}>
                 Upgrade
               </Button>
-            ) : status === "active" ? (
+            ) : (status === "active" || status === "past_due" || status === "paused") ? (
               <Button variant="outline" size="sm" onClick={handleCancel} disabled={cancelling}>
                 {cancelling ? "Cancelling..." : "Cancel"}
               </Button>

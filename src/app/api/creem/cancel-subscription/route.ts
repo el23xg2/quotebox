@@ -66,8 +66,8 @@ export async function POST() {
     });
 
     if (!res.ok) {
-      const err = await res.text();
-      return NextResponse.json({ error: `Cancel failed: ${err}` }, { status: 500 });
+      console.error("Creem cancel error:", await res.text());
+      return NextResponse.json({ error: "Failed to cancel subscription. Please try again." }, { status: 500 });
     }
 
     // Don't update DB status here — Creem webhook onSubscriptionCanceled will fire

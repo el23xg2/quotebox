@@ -43,8 +43,8 @@ export async function checkUsageLimit(
 
   const sub = await getUserSubscription(userId);
 
-  // Pro users have no limits
-  if (sub && sub.plan_id !== "free") {
+  // Pro users with active subscriptions have no limits
+  if (sub && sub.plan_id !== "free" && sub.status === "active") {
     return { allowed: true };
   }
 

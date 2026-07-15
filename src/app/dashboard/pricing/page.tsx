@@ -32,7 +32,6 @@ export default function PricingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           productId: product.id,
-          referenceId: Date.now().toString(), // temporary until auth is wired
           successUrl: `${window.location.origin}/dashboard/settings?success=true`,
         }),
       });
@@ -55,8 +54,8 @@ export default function PricingPage() {
       period: "forever",
       description: "Try QuoteBox with basic features.",
       features: [
-        "1 client",
-        "3 documents per month",
+        "3 clients",
+        "5 documents total",
         "Basic templates",
         "Email support",
       ],

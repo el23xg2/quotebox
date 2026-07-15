@@ -12,11 +12,16 @@ const getCreemApi = () => {
 };
 
 // Map Creem product IDs to plan IDs
-const PRODUCT_TO_PLAN: Record<string, string> = {
-  [process.env.NEXT_PUBLIC_CREEM_PRO_MONTHLY_ID || ""]: "pro_monthly",
-  [process.env.NEXT_PUBLIC_CREEM_PRO_YEARLY_ID || ""]: "pro_yearly",
-  [process.env.NEXT_PUBLIC_CREEM_LIFETIME_ID || ""]: "lifetime",
-};
+function getPlanId(productId: string): string {
+  const map: Record<string, string> = {};
+  const proMonthly = process.env.NEXT_PUBLIC_CREEM_PRO_MONTHLY_ID;
+  const proYearly = process.env.NEXT_PUBLIC_CREEM_PRO_YEARLY_ID;
+  const lifetime = process.env.NEXT_PUBLIC_CREEM_LIFETIME_ID;
+  if (proMonthly) map[proMonthly] = "pro_monthly";
+  if (proYearly) map[proYearly] = "pro_yearly";
+  if (lifetime) map[lifetime] = "lifetime";
+  return map[productId] || "pro_monthly";
+}
 
 export async function POST(request: Request) {
   try {
@@ -25,7 +30,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Creem not configured" }, { status: 500 });
     }
 
-    const { productId, metadata, successUrl, invoiceId, invoiceTotal } = await request.json();
+    const { productId, metadata, successUrl, invoiceId } = await request.json();
 
     // Get the authenticated user
     const cookieStore = await cookies();
@@ -65,11 +70,11 @@ export async function POST(request: Request) {
         }, { status: 500 });
       }
 
-      const invoiceTotal = invoice?.total || 0;
+      const dbInvoiceTotal = invoice?.total || 0;
 
       // invoice.total is already in cents, pass directly to Creem custom_price (which is also in cents)
       // Creem requires minimum 100 cents ($1.00)
-      const customPrice = Math.max(invoiceTotal, 100);
+      const customPrice = Math.max(dbInvoiceTotal, 100);
       if (customPrice > 99999999) {
         return NextResponse.json({ error: "Invoice amount exceeds maximum allowed." }, { status: 400 });
       }
@@ -82,7 +87,7 @@ export async function POST(request: Request) {
         metadata: {
           ...(metadata || {}),
           invoice_id: invoiceId,
-          invoice_total: invoiceTotal,
+          invoice_total: dbInvoiceTotal,
           referenceId: userId,
         },
       };
@@ -97,8 +102,9 @@ export async function POST(request: Request) {
       });
 
       if (!res.ok) {
-        const err = await res.text();
-        return NextResponse.json({ error: `Creem API error: ${err}` }, { status: 500 });
+        const errText = await res.text();
+        console.error("Creem API error:", errText);
+        return NextResponse.json({ error: "Payment service error. Please try again." }, { status: 500 });
       }
 
       const data = await res.json();
@@ -110,7 +116,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "productId or invoiceId required" }, { status: 400 });
     }
 
-    const planId = PRODUCT_TO_PLAN[productId] || "pro_monthly";
+    const planId = getPlanId(productId);
     const isLifetime = planId === "lifetime";
 
     const body: Record<string, unknown> = {
@@ -137,8 +143,9 @@ export async function POST(request: Request) {
     });
 
     if (!res.ok) {
-      const err = await res.text();
-      return NextResponse.json({ error: `Creem API error: ${err}` }, { status: 500 });
+      const errText = await res.text();
+      console.error("Creem API error:", errText);
+      return NextResponse.json({ error: "Payment service error. Please try again." }, { status: 500 });
     }
 
     const data = await res.json();
@@ -155,7 +162,7 @@ export async function POST(request: Request) {
           creem_checkout_id: data.id,
           plan_id: planId,
           status: "pending",
-        }).maybeSingle();
+        });
       } catch {
         // Table may not exist, ignore
       }

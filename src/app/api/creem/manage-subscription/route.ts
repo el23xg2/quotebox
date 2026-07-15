@@ -67,8 +67,8 @@ export async function POST() {
     });
 
     if (!res.ok) {
-      const err = await res.text();
-      return NextResponse.json({ error: `Portal error: ${err}` }, { status: 500 });
+      console.error("Creem portal error:", await res.text());
+      return NextResponse.json({ error: "Failed to create portal link." }, { status: 500 });
     }
 
     const data = await res.json();

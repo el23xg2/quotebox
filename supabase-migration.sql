@@ -193,9 +193,9 @@ CREATE POLICY IF NOT EXISTS "Public can view quote items"
 CREATE POLICY IF NOT EXISTS "Public can view contracts"
   ON contracts FOR SELECT USING (status IN ('sent', 'signed'));
 
--- Allow public read access to invoices (sent/partial/paid)
+-- Allow public read access to invoices (sent/partial only — paid is private)
 CREATE POLICY IF NOT EXISTS "Public can view invoices"
-  ON invoices FOR SELECT USING (status IN ('sent', 'partial', 'paid'));
+  ON invoices FOR SELECT USING (status IN ('sent', 'partial'));
 
 -- Allow public read access to invoice items (for public invoice page)
 CREATE POLICY IF NOT EXISTS "Public can view invoice items"
@@ -203,24 +203,36 @@ CREATE POLICY IF NOT EXISTS "Public can view invoice items"
     EXISTS (SELECT 1 FROM invoices WHERE invoices.id = invoice_items.invoice_id AND invoices.status IN ('sent', 'partial', 'paid'))
   );
 
--- Allow public insert to contract signatures
+-- Allow public insert to contract signatures (only for sent contracts)
 CREATE POLICY IF NOT EXISTS "Anyone can add signatures"
-  ON contract_signatures FOR INSERT WITH CHECK (true);
+  ON contract_signatures FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM contracts
+      WHERE contracts.id = contract_signatures.contract_id
+        AND contracts.status = 'sent'
+    )
+  );
 
--- Allow public update to contract status (for signing)
+-- Allow public update to contract status (sent -> signed only)
 CREATE POLICY IF NOT EXISTS "Anyone can update contract status to signed"
-  ON contracts FOR UPDATE USING (true) WITH CHECK (true);
+  ON contracts FOR UPDATE
+  USING (status = 'sent')
+  WITH CHECK (status = 'signed');
 
--- Allow public update to quote status (for accepting)
+-- Allow public update to quote status (sent -> accepted only)
 CREATE POLICY IF NOT EXISTS "Anyone can update quote status to accepted"
-  ON quotes FOR UPDATE USING (true) WITH CHECK (true);
+  ON quotes FOR UPDATE
+  USING (status = 'sent')
+  WITH CHECK (status = 'accepted');
 
 -- Function to ensure new users get a free subscription
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO public.subscriptions (user_id, plan_id, status)
-  VALUES (NEW.id, 'free', 'active');
+  VALUES (NEW.id, 'free', 'active')
+  ON CONFLICT (user_id) DO NOTHING;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -244,3 +256,17 @@ END $$;
 
 -- Drop old index if exists
 DROP INDEX IF EXISTS idx_subscriptions_stripe_customer_id;
+
+-- Trigger: auto-update updated_at on subscriptions
+CREATE OR REPLACE FUNCTION update_modified_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS update_subscriptions_modtime ON subscriptions;
+CREATE TRIGGER update_subscriptions_modtime
+  BEFORE UPDATE ON subscriptions
+  FOR EACH ROW EXECUTE FUNCTION update_modified_column();

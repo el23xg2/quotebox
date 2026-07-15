@@ -5,14 +5,15 @@ import { NextResponse } from "next/server";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-const PRODUCT_TO_PLAN: Record<string, string> = {
-  [process.env.NEXT_PUBLIC_CREEM_PRO_MONTHLY_ID || ""]: "pro_monthly",
-  [process.env.NEXT_PUBLIC_CREEM_PRO_YEARLY_ID || ""]: "pro_yearly",
-  [process.env.NEXT_PUBLIC_CREEM_LIFETIME_ID || ""]: "lifetime",
-};
-
 function getPlanId(productId: string): string {
-  return PRODUCT_TO_PLAN[productId] || "free";
+  const map: Record<string, string> = {};
+  const proMonthly = process.env.NEXT_PUBLIC_CREEM_PRO_MONTHLY_ID;
+  const proYearly = process.env.NEXT_PUBLIC_CREEM_PRO_YEARLY_ID;
+  const lifetime = process.env.NEXT_PUBLIC_CREEM_LIFETIME_ID;
+  if (proMonthly) map[proMonthly] = "pro_monthly";
+  if (proYearly) map[proYearly] = "pro_yearly";
+  if (lifetime) map[lifetime] = "lifetime";
+  return map[productId] || "free";
 }
 
 function getSupabase() {
@@ -164,7 +165,6 @@ export async function POST(request: Request) {
           .from("subscriptions")
           .update({
             status: "canceled",
-            plan_id: "free",
             creem_subscription_id: null,
           })
           .eq("creem_subscription_id", subId);
@@ -193,7 +193,6 @@ export async function POST(request: Request) {
           .from("subscriptions")
           .update({
             status: "expired",
-            plan_id: "free",
             creem_subscription_id: null,
           })
           .eq("creem_subscription_id", subId);
@@ -236,6 +235,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true });
   } catch (err: any) {
     console.error("Webhook handler error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

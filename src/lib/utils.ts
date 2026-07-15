@@ -13,15 +13,11 @@ export function formatCurrency(amount: number, currency = "USD") {
 }
 
 export function generateQuoteNumber(): string {
-  const timestamp = Date.now().toString(36).toUpperCase();
-  const random = Math.random().toString(36).substring(2, 5).toUpperCase();
-  return `QTE-${timestamp}-${random}`;
+  return `QTE-${crypto.randomUUID().substring(0, 8).toUpperCase()}`;
 }
 
 export function generateInvoiceNumber(): string {
-  const timestamp = Date.now().toString(36).toUpperCase();
-  const random = Math.random().toString(36).substring(2, 5).toUpperCase();
-  return `INV-${timestamp}-${random}`;
+  return `INV-${crypto.randomUUID().substring(0, 8).toUpperCase()}`;
 }
 
 export function formatDate(date: string | Date) {
@@ -43,6 +39,7 @@ export function getStatusColor(status: string) {
     rejected: "bg-red-100 text-red-700",
     expired: "bg-gray-100 text-gray-700",
     cancelled: "bg-red-100 text-red-700",
+    canceled: "bg-red-100 text-red-700",
   };
   return colors[status] || "bg-gray-100 text-gray-700";
 }
