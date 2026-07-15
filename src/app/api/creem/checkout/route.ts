@@ -66,10 +66,10 @@ export async function POST(request: Request) {
       }
 
       const invoiceTotal = invoice?.total || 0;
-      const invoiceTotalCents = Math.round(invoiceTotal * 100);
 
+      // invoice.total is already in cents, pass directly to Creem custom_price (which is also in cents)
       // Creem requires minimum 100 cents ($1.00)
-      const customPrice = Math.max(invoiceTotalCents, 100);
+      const customPrice = Math.max(invoiceTotal, 100);
       if (customPrice > 99999999) {
         return NextResponse.json({ error: "Invoice amount exceeds maximum allowed." }, { status: 400 });
       }
