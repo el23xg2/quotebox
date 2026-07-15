@@ -5,12 +5,6 @@ import { useParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import { formatCurrency } from "@/lib/utils";
 
-declare global {
-  interface Window {
-    Stripe: any;
-  }
-}
-
 export default function PublicInvoicePage() {
   const params = useParams();
   const [invoice, setInvoice] = useState<any>(null);
@@ -37,15 +31,23 @@ export default function PublicInvoicePage() {
     if (!invoice) return;
     setPaying(true);
     try {
-      const res = await fetch("/api/stripe/create-checkout", {
+      const res = await fetch("/api/creem/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoiceId: invoice.id }),
+        body: JSON.stringify({
+          invoiceId: invoice.id,
+          metadata: { invoice_id: invoice.id },
+        }),
       });
-      const { url } = await res.json();
-      if (url) window.location.href = url;
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      alert(data.error || "Payment failed. Please try again.");
     } catch (err) {
       alert("Payment failed. Please try again.");
+      console.error(err);
     }
     setPaying(false);
   }
@@ -191,7 +193,7 @@ export default function PublicInvoicePage() {
                 {paying ? "Redirecting to payment..." : `Pay ${formatCurrency(invoice.total)}`}
               </button>
               <p className="mt-2 text-xs text-gray-400">
-                Secure payment powered by Stripe
+                Secure payment powered by Creem
               </p>
             </div>
           ) : null}
