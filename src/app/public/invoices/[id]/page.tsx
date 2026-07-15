@@ -60,7 +60,9 @@ export default function PublicInvoicePage() {
   if (loading) return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Loading...</p></div>;
   if (!invoice) return <div className="min-h-screen flex items-center justify-center"><p className="text-red-500">Invoice not found.</p></div>;
 
-  // Show success message when redirected back from Creem
+  const isPaid = invoice.status === "paid";
+
+  // Show success message when redirected back from Creem but not yet marked paid
   if (paymentReturned && !isPaid) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -85,7 +87,6 @@ export default function PublicInvoicePage() {
     );
   }
 
-  const isPaid = invoice.status === "paid";
   const due_date = invoice.due_date;
   const dueDate = new Date(due_date).toLocaleDateString("en-US", {
     year: "numeric",
