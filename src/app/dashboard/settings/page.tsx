@@ -53,7 +53,7 @@ export default function SettingsPage() {
     if (!confirm("Are you sure you want to cancel your subscription? You'll lose Pro access at the end of the billing period.")) return;
     setCancelling(true);
     try {
-      const res = await fetch("/api/stripe/cancel-subscription", { method: "POST" });
+      const res = await fetch("/api/creem/cancel-subscription", { method: "POST" });
       const data = await res.json();
       if (res.ok) {
         alert("Subscription cancelled. You'll retain Pro access until the end of the billing period.");

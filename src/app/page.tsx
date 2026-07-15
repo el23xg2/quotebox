@@ -49,7 +49,7 @@ const faqs = [
   },
   {
     q: "What payment methods do you support?",
-    a: "We use Stripe to accept credit cards (Visa, Mastercard, Amex). Your clients can also pay invoices via card through Stripe's secure checkout.",
+    a: "We accept credit cards (Visa, Mastercard, Amex) through our secure payment provider.",
   },
   {
     q: "Are contracts legally binding?",
@@ -157,7 +157,7 @@ export default function LandingPage() {
                   "Unlimited quotes",
                   "Unlimited contracts with eSignatures",
                   "Unlimited invoices",
-                  "Stripe payments",
+                  "Credit card payments",
                   "Client management",
                   "Beautiful PDF exports",
                   "Free plan available",
@@ -275,7 +275,7 @@ export default function LandingPage() {
                 Invoices & Payments
               </h3>
               <p className="mt-2 text-sm text-gray-600">
-                Generate invoices from contracts. Accept credit card payments via Stripe.
+                Generate invoices from contracts. Accept credit card payments.
                 Track paid, overdue, and pending — automatically.
               </p>
             </div>
@@ -336,7 +336,7 @@ export default function LandingPage() {
               { step: "1", title: "Add Client", desc: "Name, email, done.", icon: Users },
               { step: "2", title: "Create Quote", desc: "Add services, set price, send.", icon: FileText },
               { step: "3", title: "Sign Contract", desc: "Client signs online instantly.", icon: FileSignature },
-              { step: "4", title: "Get Paid", desc: "Invoice + Stripe payment link.", icon: CreditCard },
+              { step: "4", title: "Get Paid", desc: "Invoice + secure payment link.", icon: CreditCard },
             ].map((item) => {
               const Icon = item.icon;
               return (

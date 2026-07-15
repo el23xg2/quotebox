@@ -8,8 +8,8 @@ const FREE_LIMITS = {
 export interface SubscriptionInfo {
   plan_id: string;
   status: string;
-  stripe_customer_id: string | null;
-  stripe_subscription_id: string | null;
+  creem_customer_id: string | null;
+  creem_subscription_id: string | null;
   current_period_end: string | null;
 }
 

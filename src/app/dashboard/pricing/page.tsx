@@ -10,17 +10,37 @@ export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
 
-  async function handleSubscribe(priceId: string, planName: string) {
+  // Creem product IDs from environment variables
+  const PRODUCTS: Record<string, { id: string; planId: string }> = {
+    pro_monthly: { id: process.env.NEXT_PUBLIC_CREEM_PRO_MONTHLY_ID || "", planId: "pro_monthly" },
+    pro_yearly: { id: process.env.NEXT_PUBLIC_CREEM_PRO_YEARLY_ID || "", planId: "pro_yearly" },
+    lifetime: { id: process.env.NEXT_PUBLIC_CREEM_LIFETIME_ID || "", planId: "lifetime" },
+  };
+
+  async function handleSubscribe(planKey: string, planName: string) {
     setLoading(planName);
     try {
-      const res = await fetch("/api/stripe/create-subscription", {
+      const product = PRODUCTS[planKey];
+      if (!product || !product.id) {
+        alert("Product not configured. Please contact support.");
+        setLoading(null);
+        return;
+      }
+
+      const res = await fetch("/api/creem/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({
+          productId: product.id,
+          referenceId: Date.now().toString(), // temporary until auth is wired
+          successUrl: `${window.location.origin}/dashboard/settings?success=true`,
+        }),
       });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+      } else {
+        alert(data.error || "Failed to start checkout.");
       }
     } catch (err) {
       alert("Failed to start subscription. Please try again.");
@@ -47,42 +67,42 @@ export default function PricingPage() {
       name: "Pro Monthly",
       price: "$9",
       period: "/month",
+      planKey: "pro_monthly",
       description: "Everything you need to run your freelance business.",
       features: [
         "Unlimited clients",
         "Unlimited quotes, contracts & invoices",
         "E-signatures (typed & drawn)",
-        "Stripe payment integration",
+        "Creem payment integration",
         "Client management",
         "PDF exports",
         "Priority support",
       ],
-      priceId: "price_1Tr7b3E3wdC54bTS6nwrElpd",
       popular: true,
     },
     {
       name: "Pro Yearly",
       price: "$99",
       period: "/year",
+      planKey: "pro_yearly",
       description: "Save $9/year with annual billing.",
       features: [
         "Everything in Pro Monthly",
         "2 months free",
         "Annual billing discount",
       ],
-      priceId: "price_1Tr7cQE3wdC54bTSuFC9Oncj",
     },
     {
       name: "Lifetime",
       price: "$249",
       period: "one-time",
+      planKey: "lifetime",
       description: "Pay once, use forever.",
       features: [
         "Everything in Pro",
         "No recurring payments",
         "Future updates included",
       ],
-      priceId: "price_1Tr7eHE3wdC54bTSKgX90Hpr",
     },
   ];
 
@@ -132,7 +152,7 @@ export default function PricingPage() {
                   <Button
                     className="w-full"
                     variant={plan.popular ? "primary" : "outline"}
-                    onClick={() => handleSubscribe(plan.priceId!, plan.name)}
+                    onClick={() => handleSubscribe(plan.planKey!, plan.name)}
                     disabled={loading === plan.name}
                   >
                     {loading === plan.name

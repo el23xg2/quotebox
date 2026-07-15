@@ -18,10 +18,10 @@ CREATE INDEX IF NOT EXISTS idx_clients_user_id ON clients(user_id);
 CREATE TABLE IF NOT EXISTS subscriptions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) NOT NULL UNIQUE,
-  stripe_customer_id TEXT,
-  stripe_subscription_id TEXT,
+  creem_customer_id TEXT,
+  creem_subscription_id TEXT,
   plan_id TEXT NOT NULL DEFAULT 'free',
-  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'past_due', 'canceled', 'incomplete', 'trialing')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'past_due', 'canceled', 'incomplete', 'trialing', 'expired', 'paused')),
   current_period_start TIMESTAMPTZ,
   current_period_end TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
@@ -29,7 +29,17 @@ CREATE TABLE IF NOT EXISTS subscriptions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
-CREATE INDEX IF NOT EXISTS idx_subscriptions_stripe_customer_id ON subscriptions(stripe_customer_id);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_creem_customer_id ON subscriptions(creem_customer_id);
+
+-- Checkout sessions (for tracking Creem checkout flows)
+CREATE TABLE IF NOT EXISTS checkout_sessions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) NOT NULL,
+  creem_checkout_id TEXT,
+  plan_id TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL
+);
 
 -- Quotes
 CREATE TABLE IF NOT EXISTS quotes (
@@ -220,3 +230,17 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Migration: Rename stripe_ columns to creem_ (run if column exists)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'stripe_customer_id') THEN
+    ALTER TABLE subscriptions RENAME COLUMN stripe_customer_id TO creem_customer_id;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'stripe_subscription_id') THEN
+    ALTER TABLE subscriptions RENAME COLUMN stripe_subscription_id TO creem_subscription_id;
+  END IF;
+END $$;
+
+-- Drop old index if exists
+DROP INDEX IF EXISTS idx_subscriptions_stripe_customer_id;

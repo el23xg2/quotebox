@@ -20,7 +20,7 @@ alwaysApply: true
 
 包含：
 - 项目配置指南
-- 依赖的服务（Supabase, Stripe, Resend）
+- 依赖的服务（Supabase, Creem.io, Resend）
 
 ## 3. QuoteBox MVP Plan
 **路径**: `docs/quotebox_mvp_plan.md`
@@ -38,7 +38,7 @@ alwaysApply: true
 
 ## 项目状态
 - 项目路径: `C:\Users\MOVA\Desktop\quotebox`
-- 技术栈: Next.js + Supabase + Tailwind CSS + Stripe + Resend
+- 技术栈: Next.js + Supabase + Tailwind CSS + Creem.io + Resend
 - 部署: Railway (`https://quotebox-production.up.railway.app`)
 - GitHub: `https://github.com/el23xg2/quotebox`
 - 定价: $9/月（比 HoneyBook $36/月便宜 75%）
