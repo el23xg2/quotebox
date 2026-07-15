@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import crypto from "crypto";
 import { NextResponse } from "next/server";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -21,7 +22,6 @@ function getSupabase() {
 // Verify Creem webhook HMAC-SHA256 signature
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
   try {
-    const crypto = require("crypto");
     const computed = crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
     return crypto.timingSafeEqual(Buffer.from(computed, "hex"), Buffer.from(signature, "hex"));
   } catch {
