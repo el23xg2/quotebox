@@ -193,9 +193,9 @@ CREATE POLICY IF NOT EXISTS "Public can view quote items"
 CREATE POLICY IF NOT EXISTS "Public can view contracts"
   ON contracts FOR SELECT USING (status IN ('sent', 'signed'));
 
--- Allow public read access to invoices (sent/partial only — paid is private)
+-- Allow public read access to invoices (sent, partial, and paid — clients need receipts)
 CREATE POLICY IF NOT EXISTS "Public can view invoices"
-  ON invoices FOR SELECT USING (status IN ('sent', 'partial'));
+  ON invoices FOR SELECT USING (status IN ('sent', 'partial', 'paid'));
 
 -- Allow public read access to invoice items (for public invoice page)
 CREATE POLICY IF NOT EXISTS "Public can view invoice items"
