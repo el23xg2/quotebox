@@ -10,8 +10,13 @@ export default function PublicInvoicePage() {
   const [invoice, setInvoice] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
+  const [paymentReturned, setPaymentReturned] = useState(false);
 
   useEffect(() => {
+    // Check if redirected back from payment
+    if (window.location.search.includes("success=true")) {
+      setPaymentReturned(true);
+    }
     loadInvoice();
   }, [params.id]);
 
@@ -54,6 +59,31 @@ export default function PublicInvoicePage() {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Loading...</p></div>;
   if (!invoice) return <div className="min-h-screen flex items-center justify-center"><p className="text-red-500">Invoice not found.</p></div>;
+
+  // Show success message when redirected back from Creem
+  if (paymentReturned && !isPaid) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 mb-6">
+            <svg className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Payment Processing</h2>
+          <p className="text-gray-500">
+            Your payment is being processed. This page will refresh automatically once confirmed.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-6 rounded-lg bg-blue-600 px-6 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            Refresh
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const isPaid = invoice.status === "paid";
   const due_date = invoice.due_date;

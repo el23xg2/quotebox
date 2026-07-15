@@ -4,10 +4,6 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-function getSupabase() {
-  return createClient(supabaseUrl, supabaseKey);
-}
-
 // Map Creem product IDs to plan IDs
 const PRODUCT_TO_PLAN: Record<string, string> = {
   [process.env.NEXT_PUBLIC_CREEM_PRO_MONTHLY_ID || ""]: "pro_monthly",
@@ -16,7 +12,7 @@ const PRODUCT_TO_PLAN: Record<string, string> = {
 };
 
 function getPlanId(productId: string): string {
-  return PRODUCT_TO_PLAN[productId] || "pro_monthly";
+  return PRODUCT_TO_PLAN[productId] || "free";
 }
 
 function getSupabaseService() {
@@ -26,7 +22,7 @@ function getSupabaseService() {
 export const POST = Webhook({
   webhookSecret: process.env.CREEM_WEBHOOK_SECRET || "",
 
-  onCheckoutCompleted: async ({ product, customer, order, id: checkoutId, metadata }) => {
+  onCheckoutCompleted: async ({ product, customer, order, id: checkoutId, metadata, subscription }) => {
     const supabase = getSupabaseService();
 
     // Handle invoice payments FIRST — no userId needed (client may not be logged in)
@@ -67,14 +63,20 @@ export const POST = Webhook({
         current_period_end: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString(),
       }, { onConflict: "user_id" });
     } else {
+      // Use the real subscription ID (sub_xxx), NOT the checkout session ID (chk_xxx)
+      const realSubscriptionId = subscription?.id || checkoutId;
       await supabase.from("subscriptions").upsert({
         user_id: userId,
         creem_customer_id: customer?.id || null,
-        creem_subscription_id: checkoutId || null,
+        creem_subscription_id: realSubscriptionId,
         plan_id: planId,
         status: "active",
-        current_period_start: new Date().toISOString(),
-        current_period_end: null,
+        current_period_start: subscription?.current_period_start_date
+          ? new Date(subscription.current_period_start_date).toISOString()
+          : new Date().toISOString(),
+        current_period_end: subscription?.current_period_end_date
+          ? new Date(subscription.current_period_end_date).toISOString()
+          : null,
       }, { onConflict: "user_id" });
     }
   },

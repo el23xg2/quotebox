@@ -42,6 +42,7 @@ export function getStatusColor(status: string) {
     overdue: "bg-red-100 text-red-700",
     rejected: "bg-red-100 text-red-700",
     expired: "bg-gray-100 text-gray-700",
+    cancelled: "bg-red-100 text-red-700",
   };
   return colors[status] || "bg-gray-100 text-gray-700";
 }
