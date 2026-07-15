@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -46,7 +47,6 @@ export async function POST(request: Request) {
     // For invoice payments - we need a product-based checkout since Creem doesn't do dynamic pricing
     if (invoiceId) {
       // Look up the invoice
-      const { createClient } = await import("@supabase/supabase-js");
       const svc = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -146,7 +146,6 @@ export async function POST(request: Request) {
     // Optionally save checkout session to checkout_sessions table (if it exists)
     if (userId && data.id) {
       try {
-        const { createClient } = await import("@supabase/supabase-js");
         const svc = createClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.SUPABASE_SERVICE_ROLE_KEY!
