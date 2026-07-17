@@ -129,7 +129,7 @@ export default function TermsPage() {
         <h2>13. Contact</h2>
         <p>
           For questions about these terms, contact us at{" "}
-          <strong>gaoxueyi200117@gmail.com</strong>.
+          <strong>support@quotebox.pro</strong>.
         </p>
       </main>
       <footer className="border-t border-gray-200 mt-16">

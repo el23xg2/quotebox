@@ -11,32 +11,10 @@ import {
   Users,
   Shield,
   CreditCard,
-  Star,
   ChevronRight,
   BarChart3,
   Clock,
 } from "lucide-react";
-
-const testimonials = [
-  {
-    name: "Alex M.",
-    role: "Freelance Web Developer",
-    content: "Switched from HoneyBook and saved $27/month. QuoteBox does everything I need — quotes, contracts, invoices — without the bloat.",
-    stars: 5,
-  },
-  {
-    name: "Sarah K.",
-    role: "Graphic Designer",
-    content: "I was using Google Docs + PayPal like a caveman. Now I send a quote, they click accept, sign the contract, and I get paid. All in one place.",
-    stars: 5,
-  },
-  {
-    name: "James R.",
-    role: "Consultant",
-    content: "The e-signature feature alone is worth it. My clients can sign contracts on their phone in 30 seconds. No more printing and scanning.",
-    stars: 5,
-  },
-];
 
 const faqs = [
   {
@@ -100,27 +78,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="border-t border-gray-100 px-6 py-16">
-        <div className="mx-auto max-w-5xl">
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <div key={t.name} className="rounded-xl border border-gray-200 bg-white p-6">
-                <div className="flex gap-0.5 mb-3">
-                  {Array.from({ length: t.stars }).map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-sm text-gray-600 leading-relaxed">&ldquo;{t.content}&rdquo;</p>
-                <div className="mt-4 border-t border-gray-100 pt-3">
-                  <p className="text-sm font-semibold text-gray-900">{t.name}</p>
-                  <p className="text-xs text-gray-500">{t.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Pricing comparison */}
       <section className="border-t border-gray-100 bg-gray-50 px-6 py-20">

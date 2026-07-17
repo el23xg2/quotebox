@@ -99,7 +99,7 @@ export default function PrivacyPage() {
         </ul>
         <p>
           To exercise any of these rights, contact us at{" "}
-          <strong>gaoxueyi200117@gmail.com</strong>.
+          <strong>support@quotebox.pro</strong>.
         </p>
 
         <h2>8. Changes to This Policy</h2>
@@ -112,7 +112,7 @@ export default function PrivacyPage() {
         <p>
           If you have any questions about this privacy policy, please contact
           us at{" "}
-          <strong>gaoxueyi200117@gmail.com</strong>.
+          <strong>support@quotebox.pro</strong>.
         </p>
       </main>
       <footer className="border-t border-gray-200 mt-16">
