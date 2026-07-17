@@ -25,24 +25,32 @@ export const metadata: Metadata = {
 
 const faqs = [
   {
-    q: "Is there a free plan?",
-    a: "Yes! The Free plan includes up to 3 clients and 5 documents. No credit card required. Upgrade to Pro when you're ready for unlimited everything.",
+    q: "What is QuoteBox?",
+    a: "QuoteBox is a simple all-in-one tool for freelancers to send professional quotes, get contracts signed online with e-signatures, and send invoices with online payments. It's designed as a HoneyBook alternative — same core features at $9/month instead of $36.",
+  },
+  {
+    q: "Who is QuoteBox for?",
+    a: "QuoteBox is built for solo freelancers and small creative businesses — photographers, designers, consultants, videographers, and anyone who sends quotes, contracts, and invoices to clients. If you work with a handful of clients per month and don't need enterprise team features, QuoteBox is for you.",
+  },
+  {
+    q: "How much does QuoteBox cost?",
+    a: "QuoteBox has a Free plan (up to 3 clients and 5 documents, no credit card required) and a Pro plan at $9/month (unlimited clients, unlimited documents, e-signatures, and online payments). That's 75% cheaper than HoneyBook's $36/month plan.",
+  },
+  {
+    q: "How does QuoteBox compare to HoneyBook?",
+    a: "Both handle quotes, contracts with e-signatures, and invoices. The difference: HoneyBook costs $36/month and includes team features, Kanban boards, and automations that most solo freelancers never use. QuoteBox strips away the bloat and gives you just the core three tools for $9/month.",
   },
   {
     q: "Can I cancel anytime?",
     a: "Absolutely. No contracts, no lock-in. If you're on Pro, you keep access until the end of your billing period.",
   },
   {
-    q: "What payment methods do you support?",
-    a: "We accept credit cards (Visa, Mastercard, Amex) through our secure payment provider.",
-  },
-  {
     q: "Are contracts legally binding?",
-    a: "Electronic signatures are legally binding under the ESIGN Act (US) and eIDAS (EU). Both typed and drawn signatures are supported.",
+    a: "Yes. Electronic signatures on QuoteBox are legally binding under the ESIGN Act (US) and eIDAS (EU). Both typed names and drawn signatures are supported.",
   },
   {
     q: "Is my data secure?",
-    a: "Yes. All data is encrypted in transit and at rest. We use Supabase (HIPAA-compliant infrastructure) and never share your data.",
+    a: "Yes. All data is encrypted in transit and at rest. We use Supabase (HIPAA-compliant infrastructure) and never share your data with third parties.",
   },
 ];
 
@@ -64,8 +72,9 @@ export default function LandingPage() {
             <span className="text-blue-600">$9/month. Nothing you don&apos;t need.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-xl text-gray-600">
-            The simplest way to send professional quotes, sign contracts online,
-            and get paid. Start free, upgrade when you outgrow it.
+            The simplest HoneyBook alternative for solo freelancers. Send
+            professional quotes, sign contracts online, and get paid — all for
+            $9/month. Start free, no credit card required.
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
             <Link href="/login?tab=signup">
