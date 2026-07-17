@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     siteName: "QuoteBox",
     type: "website",
   },
+  verification: {
+    google: "F7zxxS6lKyPp0yxBGwtFh0cLu3GlhVOLrN6X3uV855c",
+  },
 };
 
 export default function RootLayout({
