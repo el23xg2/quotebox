@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 import { NextResponse } from "next/server";
+import { getInvoicePaidEmail, sendEmail } from "@/lib/email";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -86,6 +87,32 @@ export async function POST(request: Request) {
               paid_at: new Date().toISOString(),
             })
             .eq("id", invoiceId);
+
+          // Send payment notification to business owner
+          try {
+            const { data: invoice } = await supabase
+              .from("invoices")
+              .select("invoice_number, total, user_id, clients(name)")
+              .eq("id", invoiceId)
+              .single();
+
+            if (invoice?.user_id) {
+              const { data: userData } = await supabase.auth.admin.getUserById(invoice.user_id);
+              const ownerEmail = userData?.user?.email;
+              const clientName = (invoice.clients as any)?.name || "a client";
+              const amount = ((invoice.total || 0) / 100).toFixed(2);
+              const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://quotebox.pro";
+
+              if (ownerEmail) {
+                await sendEmail({
+                  to: ownerEmail,
+                  ...getInvoicePaidEmail(clientName, invoice.invoice_number, amount, `${appUrl}/dashboard`),
+                });
+              }
+            }
+          } catch (emailErr) {
+            console.error("Failed to send invoice paid email:", emailErr);
+          }
 
           console.log("Invoice payment completed:", { invoiceId });
           return NextResponse.json({ received: true });

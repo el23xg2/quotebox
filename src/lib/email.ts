@@ -184,3 +184,29 @@ export function getInvoiceSentEmail(clientName: string, invoiceNumber: string, a
     `,
   };
 }
+
+export function getInvoicePaidEmail(clientName: string, invoiceNumber: string, amount: string, dashboardUrl: string) {
+  return {
+    subject: `💰 Invoice #${invoiceNumber} paid — $${amount}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <div style="background: #16a34a; padding: 20px; border-radius: 12px 12px 0 0; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 24px;">QuoteBox</h1>
+        </div>
+        <div style="padding: 24px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+          <h2 style="margin-top: 0; color: #16a34a;">Payment Received! 💰</h2>
+          <p><strong>${clientName}</strong> has paid Invoice #${invoiceNumber} for <strong>$${amount}</strong>.</p>
+          <p>The funds will be available for payout according to Creem's payout schedule.</p>
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="${dashboardUrl}" style="background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+              View in Dashboard
+            </a>
+          </div>
+          <p style="color: #6b7280; font-size: 12px; margin-top: 24px;">
+            Powered by QuoteBox — quotes, contracts & invoices for freelancers.
+          </p>
+        </div>
+      </div>
+    `,
+  };
+}
