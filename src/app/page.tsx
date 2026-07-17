@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/landing/navbar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   FileText,
   FileSignature,
@@ -15,6 +16,12 @@ import {
   BarChart3,
   Clock,
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Quotes, Contracts & Invoices for Freelancers — $9/month | QuoteBox",
+  description:
+    "The simplest HoneyBook alternative for freelancers. Send professional quotes, get contracts signed online with e-signatures, and accept payments — all for $9/month. Free plan available.",
+};
 
 const faqs = [
   {
@@ -52,9 +59,9 @@ export default function LandingPage() {
             🎉 Free plan available — no credit card required
           </div>
           <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-            Quotes, Contracts & Invoices.
+            Quotes, Contracts &amp; Invoices for Freelancers.
             <br />
-            <span className="text-blue-600">Nothing you don&apos;t need.</span>
+            <span className="text-blue-600">$9/month. Nothing you don&apos;t need.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-xl text-gray-600">
             The simplest way to send professional quotes, sign contracts online,
@@ -379,6 +386,29 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "QuoteBox",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Web",
+            offers: {
+              "@type": "Offer",
+              price: "9.00",
+              priceCurrency: "USD",
+              description: "Pro monthly plan",
+            },
+            description:
+              "The simplest tool for freelancers to send professional quotes, get contracts signed online with e-signatures, and accept payments. Start free, Pro for $9/month.",
+            url: "https://quotebox.pro",
+          }),
+        }}
+      />
     </div>
   );
 }
