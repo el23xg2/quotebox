@@ -29,31 +29,19 @@ That's it. No Kanban boards. No "workflow automations." No team seats. Just what
 - That's 75% cheaper than HoneyBook
 - Try it free at quotebox.pro
 
-## First Comment（发布后第一个评论）
+## ⬇️ 明天直接复制下面这段，粘贴到 PH 评论区 ⬇️
 
-Hey everyone! I'm Xueyi, the solo founder behind QuoteBox.
+Hey everyone — Xueyi here, solo maker from China.
 
-**Why I built this:**
+I shot freelance photography for a few years. Paid HoneyBook $36/mo the whole time. Solid product, but I literally used 3 features out of 30. Quotes, contracts, invoices. Everything else just sat there while I paid $432 a year for it.
 
-I was a freelance photographer for a few years and used HoneyBook the whole time. It's a solid tool, but I kept looking at my $36/month bill and thinking — I use 3 features out of 30. Quotes, contracts, invoices. That's it. Everything else was just noise.
+So I built QuoteBox. Does exactly those three things. Add a client → send a quote → client accepts → contract auto-generates with e-signatures → invoice with a pay link. Done in 5 minutes.
 
-So I built QuoteBox for myself. Three tools, one workflow: add client → create quote → client accepts → auto-generate contract with e-signature → invoice with payment link. Done. 5 minutes per client.
+It's $9/mo for unlimited everything, and there's a free plan (3 clients, 5 docs) — no card needed.
 
-**The pricing choice:**
+Built with Next.js + Supabase + Tailwind. Payments run on Creem (switched from Stripe after a nightmare KYC process as a non-US founder — happy to share that story if anyone's curious).
 
-I priced it at $9/month because I think $36 is unreasonable for what most solo freelancers actually need. There's also a free plan (3 clients, 5 docs) because I want people to try it without giving me a credit card first.
-
-**The tech stack (for the builders here):**
-- Next.js + Supabase + Tailwind
-- Payments via Creem (migrated from Stripe — long story involving KYC as a Chinese founder)
-- Emails via Resend
-
-**What's next:**
-- PDF generation improvements
-- Template saving for repeat clients
-- Possibly a lifetime plan
-
-Happy to answer any questions about building, pricing, or the Stripe-to-Creem migration story. Ask me anything!
+Would love feedback from other freelancers here. Does this solve a real problem for you? What would make you switch?
 
 🔗 quotebox.pro
 
@@ -61,13 +49,15 @@ Happy to answer any questions about building, pricing, or the Stripe-to-Creem mi
 
 ## 截图清单
 
-| # | 页面 | 说明 |
-|---|------|------|
-| 1 | 首页 Hero | 展示 "Quotes, Contracts & Invoices for Freelancers. $9/month" |
-| 2 | 报价创建页 | 展示报价编辑界面，有 line items、client info |
-| 3 | 合同签名页 | 展示 e-signature 界面（public view） |
-| 4 | 发票页 | 展示发票详情，含 "Pay Now" 按钮 |
-| 5 | Dashboard | 展示总览数据：总收入、待处理发票、最近活动 |
+
+| #   | 页面        | 说明                                                          |
+| --- | --------- | ----------------------------------------------------------- |
+| 1   | 首页 Hero   | 展示 "Quotes, Contracts & Invoices for Freelancers. $9/month" |
+| 2   | 报价创建页     | 展示报价编辑界面，有 line items、client info                           |
+| 3   | 合同签名页     | 展示 e-signature 界面（public view）                              |
+| 4   | 发票页       | 展示发票详情，含 "Pay Now" 按钮                                       |
+| 5   | Dashboard | 展示总览数据：总收入、待处理发票、最近活动                                       |
+
 
 ## GIF/视频脚本（30 秒）
 

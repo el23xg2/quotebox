@@ -389,6 +389,9 @@ export default function LandingPage() {
             <Link href="/terms" className="text-sm text-gray-400 hover:text-gray-600 transition-colors">
               Terms of Service
             </Link>
+            <Link href="/honeybook-alternative" className="text-sm text-gray-400 hover:text-gray-600 transition-colors">
+              HoneyBook Alternative
+            </Link>
             <p className="text-sm text-gray-400">
               &copy; {new Date().getFullYear()} QuoteBox. All rights reserved.
             </p>
