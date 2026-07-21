@@ -7,6 +7,47 @@ interface EmailPayload {
   html: string;
 }
 
+async function sendAlertToAdmin(failedPayload: EmailPayload, errorDetail: string) {
+  const adminEmail = "gaoxueyi200117@gmail.com";
+  const resendApiKey = process.env.RESEND_API_KEY;
+
+  if (!resendApiKey) return;
+
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "QuoteBox Alerts <noreply@quotebox.pro>",
+        to: [adminEmail],
+        subject: `⚠️ QuoteBox email failed — ${failedPayload.subject}`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+            <div style="background: #dc2626; padding: 20px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 20px;">QuoteBox Alert</h1>
+            </div>
+            <div style="padding: 24px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+              <h2 style="margin-top: 0; color: #dc2626;">Email Delivery Failed</h2>
+              <p><strong>To:</strong> ${failedPayload.to}</p>
+              <p><strong>Subject:</strong> ${failedPayload.subject}</p>
+              <p><strong>Error:</strong></p>
+              <pre style="background: #f3f4f6; padding: 12px; border-radius: 6px; font-size: 12px; overflow-x: auto;">${errorDetail}</pre>
+              <p style="color: #6b7280; font-size: 12px; margin-top: 24px;">
+                This is an automated alert. The email above was not delivered to the recipient.
+              </p>
+            </div>
+          </div>
+        `,
+      }),
+    });
+  } catch {
+    console.error("Failed to send admin alert (notification itself failed).");
+  }
+}
+
 export async function sendEmail(payload: EmailPayload) {
   // In development, log to console
   if (process.env.NODE_ENV === "development") {
@@ -18,7 +59,6 @@ export async function sendEmail(payload: EmailPayload) {
     return { success: true };
   }
 
-  // In production, use Resend (free tier: 100 emails/day)
   const resendApiKey = process.env.RESEND_API_KEY;
 
   if (resendApiKey) {
@@ -26,7 +66,7 @@ export async function sendEmail(payload: EmailPayload) {
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${resendApiKey}`,
+          Authorization: `Bearer ${resendApiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -40,11 +80,13 @@ export async function sendEmail(payload: EmailPayload) {
       const result = await res.json();
       if (!res.ok) {
         console.error("Resend API error:", result);
+        await sendAlertToAdmin(payload, JSON.stringify(result, null, 2));
         return { success: false, error: result };
       }
       return result;
     } catch (err) {
       console.error("Failed to send email via Resend:", err);
+      await sendAlertToAdmin(payload, String(err));
       return { success: false };
     }
   }
