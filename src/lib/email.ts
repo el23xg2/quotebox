@@ -83,7 +83,7 @@ export async function sendEmail(payload: EmailPayload) {
         await sendAlertToAdmin(payload, JSON.stringify(result, null, 2));
         return { success: false, error: result };
       }
-      return result;
+      return { success: true, data: result };
     } catch (err) {
       console.error("Failed to send email via Resend:", err);
       await sendAlertToAdmin(payload, String(err));
