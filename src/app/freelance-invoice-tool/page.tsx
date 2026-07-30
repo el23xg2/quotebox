@@ -85,7 +85,7 @@ export default function InvoiceToolPage() {
           {[
             {
               title: "Online payment links built in",
-              desc: "Every invoice includes a secure payment link. Your client clicks, pays by credit card, and you get notified. No "please wire transfer to this account" emails.",
+              desc: "Every invoice includes a secure payment link. Your client clicks, pays by credit card, and you get notified. No \"please wire transfer to this account\" emails.",
             },
             {
               title: "Connected to quotes & contracts",
