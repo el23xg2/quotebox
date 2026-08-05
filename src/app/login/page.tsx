@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -12,30 +10,38 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const supabase = createSupabaseBrowserClient();
+    try {
+      const res = await fetch("/api/auth/magic-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-    const { error: signInError } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/auth/callback`,
-      },
-    });
+      const data = await res.json().catch(() => ({}));
 
-    if (signInError) {
-      console.error("Sign in error details:", signInError);
-      setError(`Sign in failed: ${signInError.message}`);
-      setLoading(false);
-      return;
+      if (!res.ok) {
+        const message =
+          data.code === "supabase_unreachable"
+            ? "Authentication service is unreachable. The Supabase project may be paused or deleted — please check your Supabase dashboard and Railway environment variables."
+            : data.error || "Sign in failed. Please try again.";
+        setError(message);
+        setLoading(false);
+        return;
+      }
+
+      setSent(true);
+    } catch {
+      setError(
+        "Network error — could not reach the server. Please check your connection and try again."
+      );
     }
 
-    setSent(true);
     setLoading(false);
   };
 
